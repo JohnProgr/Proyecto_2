@@ -3,11 +3,11 @@
 module tb_seven_seg;
 
     reg  [3:0] data_in;
-    wire [7:0] code_out;
+    wire [7:0] display;
 
     seven_seg_decoder uut (
         .data_in(data_in),
-        .code_out(code_out)
+        .display(display)
     );
 
     initial begin

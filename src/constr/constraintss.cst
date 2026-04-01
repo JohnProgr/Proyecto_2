@@ -1,26 +1,26 @@
-IO_LOC  "code_out[7]" 86;
-IO_PORT "code_out[7]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[7]" 86;
+IO_PORT "display[7]" DRIVE=8 IO_TYPE=LVCMOS33;
 
-IO_LOC  "code_out[6]" 85;
-IO_PORT "code_out[6]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[6]" 85;
+IO_PORT "display[6]" DRIVE=8 IO_TYPE=LVCMOS33;
 
-IO_LOC  "code_out[4]" 83;
-IO_PORT "code_out[4]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[4]" 83;
+IO_PORT "display[4]" DRIVE=8 IO_TYPE=LVCMOS33;
 
-IO_LOC  "code_out[5]" 84;
-IO_PORT "code_out[5]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[5]" 84;
+IO_PORT "display[5]" DRIVE=8 IO_TYPE=LVCMOS33;
 
-IO_LOC  "code_out[0]" 79;
-IO_PORT "code_out[0]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[0]" 79;
+IO_PORT "display[0]" DRIVE=8 IO_TYPE=LVCMOS33;
 
-IO_LOC  "code_out[1]" 80;
-IO_PORT "code_out[1]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[1]" 80;
+IO_PORT "display[1]" DRIVE=8 IO_TYPE=LVCMOS33;
 
-IO_LOC  "code_out[2]" 81;
-IO_PORT "code_out[2]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[2]" 81;
+IO_PORT "display[2]" DRIVE=8 IO_TYPE=LVCMOS33;
 
-IO_LOC  "code_out[3]" 82;
-IO_PORT "code_out[3]" DRIVE=8 IO_TYPE=LVCMOS33;
+IO_LOC  "display[3]" 82;
+IO_PORT "display[3]" DRIVE=8 IO_TYPE=LVCMOS33;
 
 IO_LOC  "data_in[0]" 69;
 IO_PORT "data_in[0]" IO_TYPE=LVCMOS33 PULL_MODE=UP;
