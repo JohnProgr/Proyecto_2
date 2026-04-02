@@ -10,7 +10,7 @@ module hamming_encoder (
     assign code_out[5] = data_in[2];
     assign code_out[6] = data_in[3];
 
-    assign p1 = data_in[0] ^ data_in[1] ^ data_in[2];
+    assign p1 = data_in[0] ^ data_in[1] ^ data_in[3];
     assign p2 = data_in[0] ^ data_in[2] ^ data_in[3];
     assign p4 = data_in[1] ^ data_in[2] ^ data_in[3];
 
