@@ -18,10 +18,8 @@ module hamming_encoder (
     assign code_out[1] = p2;
     assign code_out[3] = p4;
 
-    assign p_global = code_out[0] ^ code_out[1] ^ code_out[2] ^
-                      code_out[3] ^ code_out[4] ^ code_out[5] ^
-                      code_out[6];
-
-    assign code_out[7] = p_global;
+    assign code_out[7] = code_out[0] ^ code_out[1] ^ code_out[2] ^
+                         code_out[3] ^ code_out[4] ^ code_out[5] ^
+                         code_out[6];
 
 endmodule
