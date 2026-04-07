@@ -6,8 +6,7 @@ module top_receiver (
     output [3:0] data_out,
     output       single_error,
     output       double_error,
-    output       parity_bit_error,
-    output [7:0] seg
+    output       parity_bit_error
 );
 
     wire [2:0] syndrome_wire;
@@ -34,11 +33,6 @@ module top_receiver (
         .double_error(double_error_wire),
         .parity_bit_error(parity_bit_error_wire)
     );
-
-seven_seg_decoder u_seven_seg_decoder (
-    .data_in(data_out_wire),
-    .display(seg)
-);
 
     assign syndrome            = syndrome_wire;
     assign global_parity_error = global_parity_error_wire;

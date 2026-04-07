@@ -1,0 +1,65 @@
+IO_LOC  "led_double_error" 36;
+IO_PORT "led_double_error" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "selector_sw" 31;
+IO_PORT "selector_sw" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "seg[7]" 69;
+IO_PORT "seg[7]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "seg[6]" 68;
+IO_PORT "seg[6]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "seg[5]" 57;
+IO_PORT "seg[5]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "seg[4]" 56;
+IO_PORT "seg[4]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "seg[3]" 55;
+IO_PORT "seg[3]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "seg[2]" 54;
+IO_PORT "seg[2]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "seg[1]" 53;
+IO_PORT "seg[1]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "seg[0]" 51;
+IO_PORT "seg[0]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "led[3]" 14;
+IO_PORT "led[3]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "led[2]" 13;
+IO_PORT "led[2]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "led[1]" 11;
+IO_PORT "led[1]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "led[0]" 10;
+IO_PORT "led[0]" DRIVE=8 IO_TYPE=LVCMOS33;
+
+IO_LOC  "code_in[7]" 80;
+IO_PORT "code_in[7]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "code_in[6]" 81;
+IO_PORT "code_in[6]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "code_in[5]" 82;
+IO_PORT "code_in[5]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "code_in[4]" 83;
+IO_PORT "code_in[4]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "code_in[3]" 84;
+IO_PORT "code_in[3]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "code_in[2]" 85;
+IO_PORT "code_in[2]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "code_in[1]" 86;
+IO_PORT "code_in[1]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "code_in[0]" 63;
+IO_PORT "code_in[0]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
