@@ -65,23 +65,136 @@ Salida: leds que pinta el siete segmentos.
 
 
 ## 3.2 Diagramas de bloques de cada subsistema
-
+```text
 Subsistema 1; Codificador Hamming extendido
-
+data_in[3:0]
+    │
+    ▼
+┌──────────────────────────────┐
+│       hamming_encoder        │
+│ - calcula bits de paridad    │
+│ - calcula paridad global     │
+│ - forma palabra de 8 bits    │
+└──────────────────────────────┘
+    │
+    ▼
+code_out[7:0]
+```
+Diagrama de bloques del subsistema de codificación Hamming extendido.
+Este subsistema recibe una palabra de entrada de 4 bits y genera una palabra codificada de 8 bits. Para ello calcula los bits de paridad del código Hamming y además la paridad global, lo que permite detectar y corregir errores en etapas posteriores del sistema.
 
 Subsistema 2; Generador de error
-
+```text
+code_in[7:0] ───────┐
+                    ▼
+              ┌──────────────────────────────┐
+control_error │    error_generator_8bit      │
+─────────────▶│ - recibe palabra codificada  │
+              │ - genera máscara de error    │
+              │ - inserta error con XOR      │
+              └──────────────────────────────┘
+                              │
+                              ▼
+                        code_out[7:0]
+```
+Diagrama de bloques del subsistema generador de error.
+Este bloque simula el canal de transmisión. Recibe la palabra codificada de 8 bits y, dependiendo de la señal de control de error, genera una máscara para alterar uno o más bits mediante una operación XOR. Así se puede comprobar el funcionamiento del sistema de detección y corrección.
 
 Subsistema 3; Decodificador de síndrome
-
+```text
+code_in[7:0]
+    │
+    ▼
+┌──────────────────────────────┐
+│      syndrome_decoder        │
+│ - recalcula paridades        │
+│ - obtiene síndrome           │
+│ - verifica paridad global    │
+└──────────────────────────────┘
+    │                 │
+    ▼                 ▼
+syndrome[2:0]   global_parity_error
+```
+Diagrama de bloques del subsistema decodificador de síndrome.
+Este subsistema recibe la palabra de 8 bits proveniente del canal y recalcula las paridades para obtener el síndrome de error. Además, verifica la paridad global, lo cual permite identificar si ocurrió un error simple, un error doble o un error en el bit de paridad global.
 
 Subsistema 4; Corrector de error
-
+```text
+code_in[7:0] ───────────────┐
+syndrome[2:0] ──────────────┼────► ┌──────────────────────────────┐
+global_parity_error ────────┘      │       error_corrector        │
+                                   │ - identifica tipo de error   │
+                                   │ - corrige error simple       │
+                                   │ - detecta error doble        │
+                                   │ - extrae datos útiles        │
+                                   └──────────────────────────────┘
+                                         │       │       │       │       │
+                                         ▼       ▼       ▼       ▼       ▼
+                              corrected_code[7:0] data_out[3:0]
+                                                   single_error
+                                                   double_error
+                                                   parity_bit_error
+```
+Diagrama de bloques del subsistema corrector de error.
+Este bloque utiliza la palabra recibida, el síndrome y la señal de paridad global para determinar el tipo de error presente. Cuando se detecta un error simple, el sistema lo corrige; si se trata de un error doble, lo reporta sin corregirlo. Finalmente, extrae los 4 bits de información original y genera señales indicadoras del estado del error.
 
 Subsistema 5; Visualización
+```text
+data_in[3:0]
+    │
+    ▼
+┌──────────────────────────────┐
+│      seven_seg_decoder       │
+│ - convierte binario          │
+│ - genera patrón para display │
+└──────────────────────────────┘
+    │
+    ▼
+display[7:0]
+```
+Diagrama de bloques del subsistema de visualización.
+Este subsistema toma un dato binario de 4 bits y lo convierte en el patrón correspondiente para un display de 7 segmentos. De esta manera, el valor procesado por el sistema puede observarse visualmente de forma clara.
 
 Interconexion; 
-
+```text
+data_in[3:0]
+    │
+    ▼
+┌───────────────────┐
+│  hamming_encoder  │
+└───────────────────┘
+    │
+    ▼
+encoded_code[7:0]
+    │
+    ▼
+┌───────────────────────┐
+│ error_generator_8bit  │
+└───────────────────────┘
+    │
+    ▼
+channel_code[7:0]
+    │
+    ├──────────────────────────────►
+    │                               ┌───────────────────┐
+    ▼                               │  error_corrector  │
+┌───────────────────┐               └───────────────────┘
+│ syndrome_decoder  │                    │
+└───────────────────┘                    ▼
+    │                                    data_out[3:0]
+    ├── syndrome[2:0] ─────────────────►
+    └── global_parity_error ──────────►
+                                         │
+                                         ▼
+                              ┌────────────────────┐
+                              │ seven_seg_decoder  │
+                              └────────────────────┘
+                                         │
+                                         ▼
+                                    display[7:0]
+```
+Diagrama de bloques de la interconexión general del sistema.
+El sistema completo inicia con una palabra de entrada de 4 bits, la cual es codificada mediante Hamming extendido para obtener una palabra de 8 bits con redundancia. Luego, el generador de error simula alteraciones en la transmisión. Posteriormente, el decodificador de síndrome analiza la palabra recibida y produce la información necesaria para que el corrector determine y trate el error. Finalmente, los datos recuperados se envían al decodificador de 7 segmentos para su visualización.
 
 ### 4. Simplificacion de ecuaciones booleanas 
 
