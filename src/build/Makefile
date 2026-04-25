@@ -6,27 +6,27 @@ FAMILY = GW1N-9C
 DEVICE = GW1NR-LV9QN88PC6/I5
 
 #Nombre del proyecto... Acá ponen el nombre que deseen.
-PROYECT = 
+PROYECT = receiver
 
 #Fuentes de diseno
-SOURCES := $(wildcard ../design/*.v ../design/*.sv) #Todas las fuentes .v o .sv que estan en design
+SOURCES := $(wildcard ../design/transmitter/*.sv ../design/receiver/*.sv) #Todas las fuentes .v o .sv que estan en design
 #Si quieren indicarlas una a una, pueden hacerlo como en este ejemplo:
 #SOURCES = ../design/module_top_deco_gray.v ../design/module_input_deco_gray.v 
 
 #Fuente de simulacion
 #aca va el testbench que quieran simular
-TESTBENCH = ../sim/TB.sv
+TESTBENCH = ../sim/tb_top.sv
 
 # Constraints para el proyecto
 #aca va el archivo de constraints del proyecto
-CONSTRAINTS = ../constr/CONSTRAINTS.cst
+CONSTRAINTS = ../constr/constraintss.cst
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
-TOP_DESIGN = 
-TOP_TB     = 
+TOP_DESIGN = top
+TOP_TB = tb_top
 
 #nombre del vcd que va a generar el tb
-VCD_FILE = 
+VCD_FILE = tb_top_system.vcd
 
 
 all: synth pnr bitstream load
@@ -64,3 +64,6 @@ load: ${PROYECT}_${BOARD}.fs
 
 .PHONY: load  wv
 .INTERMEDIATE: ${PROYECT}_pnr.json ${PROYECT}.json
+
+clean:
+	rm -f *.out *.vcd *.o *.json *.asc *.bit sim.out
