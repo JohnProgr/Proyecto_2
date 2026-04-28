@@ -1,11 +1,16 @@
+// =========================
 // Reloj y reset
+// =========================
 IO_LOC  "clk"   52;
 IO_PORT "clk"   IO_TYPE=LVCMOS33 PULL_MODE=UP;
 
 IO_LOC  "reset" 4;
-IO_PORT "reset" IO_TYPE=LVCMOS18;
+IO_PORT "reset" IO_TYPE=LVCMOS33;
 
-// Columnas teclado (salidas) - pines GPIO 3.3V
+
+// =========================
+// Columnas teclado (salidas)
+// =========================
 IO_LOC  "cols[0]" 25;
 IO_PORT "cols[0]" IO_TYPE=LVCMOS33 DRIVE=8;
 
@@ -18,7 +23,10 @@ IO_PORT "cols[2]" IO_TYPE=LVCMOS33 DRIVE=8;
 IO_LOC  "cols[3]" 28;
 IO_PORT "cols[3]" IO_TYPE=LVCMOS33 DRIVE=8;
 
-// Filas teclado (entradas) - pines GPIO 3.3V
+
+// =========================
+// Filas teclado (entradas)
+// =========================
 IO_LOC  "rows[0]" 29;
 IO_PORT "rows[0]" IO_TYPE=LVCMOS33 PULL_MODE=UP;
 
@@ -31,29 +39,35 @@ IO_PORT "rows[2]" IO_TYPE=LVCMOS33 PULL_MODE=UP;
 IO_LOC  "rows[3]" 34;
 IO_PORT "rows[3]" IO_TYPE=LVCMOS33 PULL_MODE=UP;
 
-// Segmentos display (salidas) - LEDs onboard LVCMOS18
+
+// =========================
+// Segmentos display (TODOS iguales)
+// =========================
 IO_LOC  "seg[0]" 10;
-IO_PORT "seg[0]" IO_TYPE=LVCMOS18 DRIVE=8;
+IO_PORT "seg[0]" IO_TYPE=LVCMOS33 DRIVE=8;
 
 IO_LOC  "seg[1]" 11;
-IO_PORT "seg[1]" IO_TYPE=LVCMOS18 DRIVE=8;
+IO_PORT "seg[1]" IO_TYPE=LVCMOS33 DRIVE=8;
 
 IO_LOC  "seg[2]" 13;
-IO_PORT "seg[2]" IO_TYPE=LVCMOS18 DRIVE=8;
+IO_PORT "seg[2]" IO_TYPE=LVCMOS33 DRIVE=8;
 
 IO_LOC  "seg[3]" 14;
-IO_PORT "seg[3]" IO_TYPE=LVCMOS18 DRIVE=8;
+IO_PORT "seg[3]" IO_TYPE=LVCMOS33 DRIVE=8;
 
 IO_LOC  "seg[4]" 15;
-IO_PORT "seg[4]" IO_TYPE=LVCMOS18 DRIVE=8;
+IO_PORT "seg[4]" IO_TYPE=LVCMOS33 DRIVE=8;
 
 IO_LOC  "seg[5]" 16;
-IO_PORT "seg[5]" IO_TYPE=LVCMOS18 DRIVE=8;
+IO_PORT "seg[5]" IO_TYPE=LVCMOS33 DRIVE=8;
 
 IO_LOC  "seg[6]" 35;
 IO_PORT "seg[6]" IO_TYPE=LVCMOS33 DRIVE=8;
 
-// Anodos display (salidas) - pines GPIO 3.3V
+
+// =========================
+// Selección de dígitos (an)
+// =========================
 IO_LOC  "an[0]" 40;
 IO_PORT "an[0]" IO_TYPE=LVCMOS33 DRIVE=8;
 
