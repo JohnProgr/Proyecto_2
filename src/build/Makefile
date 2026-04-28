@@ -9,24 +9,24 @@ DEVICE = GW1NR-LV9QN88PC6/I5
 PROYECT = sumador
 
 #Fuentes de diseno
-SOURCES := ../design/fsm_control.sv #Todas las fuentes .v o .sv que estan en design
+SOURCES := ../design/sincronizador.sv ../design/debounce.sv ../design/keyboard_scanner.sv ../design/fsm_control.sv ../design/registro_num.sv ../design/sumador.sv ../design/bcd_to_7seg.sv ../design/display_mux.sv ../design/top.sv
 #Si quieren indicarlas una a una, pueden hacerlo como en este ejemplo:
 #SOURCES = ../design/module_top_deco_gray.v ../design/module_input_deco_gray.v 
 
 #Fuente de simulacion
 #aca va el testbench que quieran simular
-TESTBENCH = ../sim/tb_fsm.sv
+TESTBENCH = ../sim/tb_top.sv
 
 # Constraints para el proyecto
 #aca va el archivo de constraints del proyecto
-CONSTRAINTS = 
+CONSTRAINTS = ../constr/constr.cst 
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
-TOP_DESIGN = fsm_control
-TOP_TB = tb_fsm
+TOP_DESIGN = top
+TOP_TB = tb_top
 
 #nombre del vcd que va a generar el tb
-VCD_FILE = tb_fsm.vcd
+VCD_FILE = tb_top_system.vcd
 
 
 all: synth pnr bitstream load

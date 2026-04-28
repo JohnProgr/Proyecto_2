@@ -2,65 +2,58 @@
 
 module tb_top;
 
-    logic clk, reset;
-    logic key_valid;
-    logic [3:0] key_value;
-    logic [12:0] result;
+logic       clk, reset;
+logic [3:0] rows;
+logic [3:0] cols;
+logic [3:0] an;
+logic [6:0] seg;
 
-    top uut (
-        .clk(clk),
-        .reset(reset),
-        .key_valid(key_valid),
-        .key_value(key_value),
-        .result(result)
-    );
+top #(.CLK_HZ(20)) uut (
+    .clk(clk),
+    .reset(reset),
+    .rows(rows),
+    .cols(cols),
+    .an(an),
+    .seg(seg)
+);
 
-    always #5 clk = ~clk;
+always #5 clk = ~clk;
 
-    task press_key(input [3:0] key);
-    begin
-        key_value = key;
-        key_valid = 1;
-        #10;
-        key_valid = 0;
-        #20;
-    end
-    endtask
+task press_key(input [3:0] row_active);
+begin
+    rows = row_active;
+    #2000;
+    rows = 4'b1111;
+    #500;
+end
+endtask
 
-    initial begin
-        $dumpfile("tb_top_system.vcd");
-        $dumpvars(0, tb_top);
+initial begin
+    $dumpfile("tb_top_system.vcd");
+    $dumpvars(0, tb_top);
 
-        clk = 0;
-        reset = 1;
-        key_valid = 0;
-        key_value = 0;
+    clk = 0; reset = 1; rows = 4'b1111;
+    #20 reset = 0;
+    #500;
 
-        #20 reset = 0;
+    // NUM1: tecla 1 (fila 0)
+    press_key(4'b1110);
+    // NUM1: tecla 2 (fila 0)
+    press_key(4'b1110);
+    // NUM1: tecla 3 (fila 0)
+    press_key(4'b1110);
+    // Confirmar # (fila 3)
+    press_key(4'b0111);
 
-        // NUM1 = 123
-        press_key(4'd1);
-        press_key(4'd2);
-        press_key(4'd3);
+    // NUM2: tecla 4 (fila 1)
+    press_key(4'b1101);
+    // NUM2: tecla 5 (fila 1)
+    press_key(4'b1101);
+    // Confirmar # (fila 3)
+    press_key(4'b0111);
 
-        // Confirmar
-        press_key(4'hA);
-
-        // NUM2 = 45
-        press_key(4'd4);
-        press_key(4'd5);
-
-        // Confirmar
-        press_key(4'hA);
-
-        #50;
-
-        // Nueva operación
-        press_key(4'd7);
-
-        #100;
-
-        $finish;
-    end
+    #5000;
+    $finish;
+end
 
 endmodule
