@@ -9,27 +9,10 @@ module top (
     output logic [3:0] an
 );
 
-    logic key_valid;
-    logic [3:0] key_code;
-
     logic [13:0] display_value;
 
-    keypad_scanner keypad_inst (
-        .clk(clk),
-        .rst_n(rst_n),
-        .rows(rows),
-        .cols(cols),
-        .key_valid(key_valid),
-        .key_code(key_code)
-    );
-
-    input_fsm fsm_inst (
-        .clk(clk),
-        .rst_n(rst_n),
-        .key_valid(key_valid),
-        .key_code(key_code),
-        .display_value(display_value)
-    );
+    assign display_value = 14'd1234;
+    assign cols = 4'b0000;
 
     display_mux4_cc display_inst (
         .clk(clk),

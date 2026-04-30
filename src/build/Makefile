@@ -9,7 +9,7 @@ DEVICE = GW1NR-LV9QN88PC6/I5
 PROYECT = sumador
 
 #Fuentes de diseno
-SOURCES := ../design/sincronizador.sv ../design/debounce.sv ../design/keyboard_scanner.sv ../design/fsm_control.sv ../design/registro_num.sv ../design/sumador.sv ../design/bcd_to_7seg.sv ../design/display_mux.sv ../design/top.sv
+SOURCES := ../design/sync_2ff.sv ../design/debounce.sv ../design/keypad_scanner.sv ../design/input_fsm.sv ../design/bin_to_bcd4.sv ../design/bcd_to_7seg_cc.sv ../design/display_mux4_cc.sv ../design/top.sv
 #Si quieren indicarlas una a una, pueden hacerlo como en este ejemplo:
 #SOURCES = ../design/module_top_deco_gray.v ../design/module_input_deco_gray.v 
 
@@ -19,7 +19,7 @@ TESTBENCH = ../sim/tb_top.sv
 
 # Constraints para el proyecto
 #aca va el archivo de constraints del proyecto
-CONSTRAINTS = ../constr/constr.cst 
+CONSTRAINTS = ../constr/Modulo_Pines.cst
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
 TOP_DESIGN = top
