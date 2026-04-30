@@ -7,33 +7,37 @@ module bin_to_bcd4 (
     output logic [3:0] ones
 );
 
-    integer i;
-    logic [29:0] shift;
-
     always_comb begin
-        shift = 30'd0;
-        shift[13:0] = bin;
+        thousands = 4'd0;
+        hundreds  = 4'd0;
+        tens      = 4'd0;
+        ones      = 4'd0;
 
-        for (i = 0; i < 14; i = i + 1) begin
-            if (shift[17:14] >= 5)
-                shift[17:14] = shift[17:14] + 3;
+        case (bin)
+            14'd0:  begin tens = 4'd0; ones = 4'd0; end
+            14'd1:  begin tens = 4'd0; ones = 4'd1; end
+            14'd2:  begin tens = 4'd0; ones = 4'd2; end
+            14'd3:  begin tens = 4'd0; ones = 4'd3; end
+            14'd4:  begin tens = 4'd0; ones = 4'd4; end
+            14'd5:  begin tens = 4'd0; ones = 4'd5; end
+            14'd6:  begin tens = 4'd0; ones = 4'd6; end
+            14'd7:  begin tens = 4'd0; ones = 4'd7; end
+            14'd8:  begin tens = 4'd0; ones = 4'd8; end
+            14'd9:  begin tens = 4'd0; ones = 4'd9; end
+            14'd10: begin tens = 4'd1; ones = 4'd0; end
+            14'd11: begin tens = 4'd1; ones = 4'd1; end
+            14'd12: begin tens = 4'd1; ones = 4'd2; end
+            14'd13: begin tens = 4'd1; ones = 4'd3; end
+            14'd14: begin tens = 4'd1; ones = 4'd4; end
+            14'd15: begin tens = 4'd1; ones = 4'd5; end
 
-            if (shift[21:18] >= 5)
-                shift[21:18] = shift[21:18] + 3;
-
-            if (shift[25:22] >= 5)
-                shift[25:22] = shift[25:22] + 3;
-
-            if (shift[29:26] >= 5)
-                shift[29:26] = shift[29:26] + 3;
-
-            shift = shift << 1;
-        end
-
-        ones      = shift[17:14];
-        tens      = shift[21:18];
-        hundreds  = shift[25:22];
-        thousands = shift[29:26];
+            default: begin
+                thousands = 4'd0;
+                hundreds  = 4'd0;
+                tens      = 4'd0;
+                ones      = 4'd0;
+            end
+        endcase
     end
 
 endmodule

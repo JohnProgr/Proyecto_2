@@ -28,54 +28,54 @@ module display_mux4_cc (
         .ones(ones)
     );
 
-    bcd_to_7seg_cc decoder_inst (
+    bcd_to_7seg_cc seg_decoder (
         .bcd(current_digit),
         .seg(seg)
     );
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            refresh_count <= '0;
-            digit_sel     <= 2'd0;
-        end else begin
+            refresh_count <= 0;
+            digit_sel <= 0;
+        end
+        else begin
             if (refresh_count == REFRESH_MAX - 1) begin
-                refresh_count <= '0;
+                refresh_count <= 0;
                 digit_sel <= digit_sel + 1;
-            end else begin
+            end
+            else begin
                 refresh_count <= refresh_count + 1;
             end
         end
     end
 
     always_comb begin
-        an = 4'b0000;
+
         current_digit = 4'd0;
+        an = 4'b1111;
 
         case (digit_sel)
+
             2'd0: begin
-                an = 4'b0001;
-                current_digit = ones;
+                current_digit = thousands;
+                an = 4'b1110;
             end
 
             2'd1: begin
-                an = 4'b0010;
-                current_digit = tens;
+                current_digit = hundreds;
+                an = 4'b1101;
             end
 
             2'd2: begin
-                an = 4'b0100;
-                current_digit = hundreds;
+                current_digit = tens;
+                an = 4'b1011;
             end
 
             2'd3: begin
-                an = 4'b1000;
-                current_digit = thousands;
+                current_digit = ones;
+                an = 4'b0111;
             end
 
-            default: begin
-                an = 4'b0001;
-                current_digit = ones;
-            end
         endcase
     end
 
