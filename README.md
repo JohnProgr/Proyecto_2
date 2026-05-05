@@ -2,14 +2,14 @@
 
 ## 1. Abreviaturas y definiciones
 
-- **FPGA**: *Field Programmable Gate Array*, dispositivo lógico programable utilizado para implementar sistemas digitales.
-- **HDL**: *Hardware Description Language*, lenguaje usado para describir hardware digital.
-- **SystemVerilog**: lenguaje de descripción de hardware utilizado para implementar el diseño.
-- **FSM**: *Finite State Machine* o máquina de estados finitos. Se utiliza para controlar la secuencia de operación del sistema.
-- **BCD**: *Binary Coded Decimal*. Representación en la cual cada dígito decimal se almacena por separado en 4 bits.
-- **Debounce**: técnica para eliminar rebotes mecánicos de una tecla o interruptor.
-- **Multiplexado**: técnica que permite controlar varios displays utilizando una ruta de datos compartida y activando un display a la vez.
-- **Tang Nano 9K**: tarjeta FPGA utilizada para implementar el sistema.
+- **FPGA**: *Field Programmable Gate Array*. Dispositivo lógico programable utilizado para implementar sistemas digitales.
+- **HDL**: *Hardware Description Language*. Lenguaje utilizado para describir hardware digital.
+- **SystemVerilog**: lenguaje de descripción de hardware utilizado para implementar el diseño del proyecto.
+- **FSM**: *Finite State Machine*. Máquina de estados finitos utilizada para controlar la secuencia de operación del sistema.
+- **BCD**: *Binary Coded Decimal*. Formato en el cual cada dígito decimal se almacena de forma independiente en 4 bits.
+- **Debounce**: técnica utilizada para reducir o eliminar lecturas falsas generadas por el rebote mecánico de una tecla.
+- **Multiplexado**: técnica que permite controlar varios displays utilizando señales compartidas y activando un display a la vez.
+- **Tang Nano 9K**: tarjeta FPGA utilizada como plataforma de implementación.
 
 ## 2. Referencias
 
@@ -27,81 +27,83 @@
 
 El presente proyecto consiste en el diseño e implementación de un sistema digital sincrónico en una FPGA Tang Nano 9K utilizando SystemVerilog. El sistema permite capturar datos desde un teclado hexadecimal, almacenar dos números decimales positivos, realizar la suma aritmética de ambos y mostrar el resultado en cuatro displays de 7 segmentos.
 
-El diseño se desarrolló siguiendo una organización modular. Cada bloque cumple una función específica dentro del sistema: lectura del teclado, sincronización de señales externas, control mediante una FSM, almacenamiento de dígitos, suma BCD y despliegue multiplexado. Esta separación facilita la verificación individual de los subsistemas y permite analizar con mayor claridad el flujo de datos desde la entrada física hasta la salida visual.
+El diseño se desarrolló de forma modular. Cada bloque cumple una función específica dentro del sistema: lectura del teclado, sincronización de señales externas, control mediante una máquina de estados finitos, almacenamiento de operandos, suma BCD y despliegue multiplexado. Esta organización facilita la verificación individual de los módulos y permite describir con claridad el flujo de datos desde la entrada física hasta la salida visual del sistema.
 
 ## 4. Definición del problema y objetivos
 
-El problema planteado consiste en diseñar un circuito digital sincrónico capaz de capturar dos números enteros positivos desde un teclado hexadecimal, procesarlos dentro de la FPGA y desplegar la suma sin signo en cuatro displays de 7 segmentos. El sistema debe operar con el reloj de 27 MHz de la Tang Nano 9K y debe considerar la sincronización de señales externas, ya que las entradas provenientes del teclado no están originalmente alineadas con el reloj interno del sistema.
+El problema planteado consiste en diseñar un circuito digital sincrónico capaz de capturar dos números enteros positivos desde un teclado hexadecimal, procesarlos dentro de la FPGA y desplegar la suma sin signo en cuatro displays de 7 segmentos. El sistema debe operar con el reloj de 27 MHz de la Tang Nano 9K y debe considerar la sincronización de las señales externas del teclado, debido a que estas no están originalmente alineadas con el reloj interno del sistema.
 
-### Objetivo general
+### 4.1 Objetivo general
 
 Implementar un sistema digital sincrónico en SystemVerilog que capture dos números desde un teclado hexadecimal, realice su suma en formato decimal y muestre el resultado en displays de 7 segmentos.
 
-### Objetivos específicos
+### 4.2 Objetivos específicos
 
-- Leer un teclado hexadecimal mediante barrido de filas y lectura de columnas.
+- Leer un teclado hexadecimal mediante el barrido de filas y la lectura de columnas.
 - Sincronizar las señales externas del teclado con el reloj interno de la FPGA.
 - Reducir el efecto del rebote mecánico mediante una lógica de bloqueo y espera de liberación de tecla.
 - Controlar la captura de los operandos mediante una máquina de estados finitos.
 - Almacenar los dígitos ingresados en registros internos.
 - Implementar una suma BCD de cuatro dígitos.
-- Multiplexar cuatro displays de 7 segmentos para mostrar el número que se está ingresando o el resultado.
+- Multiplexar cuatro displays de 7 segmentos para mostrar el número ingresado o el resultado de la suma.
 - Validar el funcionamiento del sistema mediante testbenches en SystemVerilog.
 
 ## 5. Descripción general del sistema
 
-El sistema completo recibe como entrada las columnas de un teclado hexadecimal y genera como salida las señales de filas para el barrido del teclado, las señales de segmentos del display y las señales de selección de ánodo. El flujo de operación inicia con el módulo de lectura del teclado, el cual detecta una tecla presionada y entrega un código de 4 bits junto con una señal de validación. Luego, la FSM interpreta ese código y decide si debe almacenarse como parte del primer número, como parte del segundo número o si debe mostrarse el resultado.
+El sistema completo recibe como entrada las columnas de un teclado hexadecimal y genera como salida las señales de filas para el barrido del teclado, las señales de segmentos del display y las señales de selección de ánodo. El flujo de operación inicia en el módulo de lectura del teclado, el cual detecta una tecla presionada y entrega un código de 4 bits junto con una señal de validación. Posteriormente, la FSM interpreta ese código y decide si el dígito debe almacenarse como parte del primer número, como parte del segundo número o si debe mostrarse el resultado.
 
-El sistema utiliza la tecla `*`, codificada internamente como `4'hE`, para pasar de la entrada del primer número a la entrada del segundo número. La tecla `#`, codificada como `4'hF`, se utiliza para solicitar la visualización del resultado. Las teclas numéricas de `0` a `9` se almacenan como dígitos BCD.
+La tecla `*`, codificada internamente como `4'hE`, se utiliza como separador entre operandos. La tecla `#`, codificada como `4'hF`, se utiliza para solicitar la visualización del resultado. Las teclas numéricas de `0` a `9` se almacenan como dígitos BCD.
 
 El diseño se compone de los siguientes módulos principales:
 
-1. `keypad_reader.sv`: realiza el barrido del teclado, sincroniza las columnas y genera `key_value` y `key_valid`.
-2. `fsm_top.sv`: integra la lectura del teclado, la FSM de control, los registros de operandos, el sumador y el display.
-3. `bcd4_adder.sv`: realiza la suma decimal de cuatro dígitos BCD.
-4. `display_mux4.sv`: multiplexa los cuatro dígitos hacia los displays de 7 segmentos.
-5. `display_hex_decoder.sv`: convierte cada dígito de 4 bits en el patrón correspondiente de 7 segmentos.
-6. `system_top.sv`: versión alternativa del sistema superior donde la lógica de suma está integrada directamente dentro del módulo superior.
+| Módulo | Función principal |
+|---|---|
+| `keypad_reader.sv` | Realiza el barrido del teclado, sincroniza las columnas y genera `key_value` y `key_valid`. |
+| `fsm_top.sv` | Integra la lectura del teclado, la FSM de control, los registros de operandos, el sumador BCD y el despliegue. |
+| `bcd4_adder.sv` | Realiza la suma decimal de cuatro dígitos BCD. |
+| `display_mux4.sv` | Multiplexa los cuatro dígitos hacia los displays de 7 segmentos. |
+| `display_hex_decoder.sv` | Convierte cada dígito de 4 bits en el patrón correspondiente para el display de 7 segmentos. |
+| `system_top.sv` | Versión alternativa del módulo superior, con parte de la lógica de suma integrada directamente. |
+
+En el informe se toma `fsm_top.sv` como módulo superior principal, ya que organiza el comportamiento del sistema mediante estados definidos y se ajusta directamente al criterio de control secuencial solicitado para el proyecto.
 
 ## 6. Criterio de diseño
 
-El diseño se realizó de forma modular para separar claramente la ruta de datos y la lógica de control. Esta decisión permite probar cada subsistema por separado y facilita la depuración del proyecto. En lugar de implementar todo el comportamiento en un único bloque, se dividió el sistema en lectura de teclado, control de estados, suma y visualización.
+El diseño se realizó de manera modular para separar la ruta de datos de la lógica de control. Esta decisión permite probar cada subsistema de forma independiente y simplifica la depuración del proyecto. En lugar de concentrar todo el comportamiento en un único bloque, el sistema se dividió en lectura de teclado, control de estados, suma y visualización.
 
-La captura de datos se implementó mediante una FSM porque el sistema no solo debe leer teclas, sino también interpretar el contexto en el que se presionan. Por ejemplo, una tecla numérica puede pertenecer al primer operando, al segundo operando o puede iniciar una nueva operación después de mostrar el resultado. La FSM permite definir este comportamiento de forma ordenada y sin ambigüedad.
+La captura de datos se implementó mediante una FSM porque el sistema debe interpretar cada tecla según el contexto de operación. Una tecla numérica puede pertenecer al primer operando, al segundo operando o puede iniciar una nueva operación después de mostrar el resultado. Con la FSM se define este comportamiento de forma ordenada y sin ambigüedad.
 
-Las señales del teclado son externas a la FPGA y, por tanto, asíncronas respecto al reloj interno. Por esta razón, las columnas se registran mediante dos flip-flops antes de ser utilizadas por la lógica principal. Esto reduce el riesgo de problemas de metaestabilidad. Además, se implementa una lógica de bloqueo que evita registrar repetidamente la misma tecla mientras permanece presionada.
+Las señales del teclado son externas a la FPGA y, por lo tanto, asíncronas respecto al reloj interno. Para reducir el riesgo de metaestabilidad, las columnas se registran mediante dos flip-flops antes de ser utilizadas por la lógica principal. Además, se implementó una lógica de bloqueo para evitar que una misma pulsación sea registrada varias veces mientras la tecla permanece presionada.
 
-La suma se realiza en formato BCD porque los datos ingresados y mostrados son decimales. Cada dígito se almacena de forma independiente en 4 bits, lo cual simplifica el despliegue en los displays de 7 segmentos y evita tener que convertir un número binario completo a decimal antes de mostrarlo.
+La suma se realiza en formato BCD porque los datos ingresados y mostrados son decimales. Cada dígito se almacena de forma independiente en 4 bits, lo cual simplifica la conexión entre el bloque aritmético y el subsistema de despliegue. Esta decisión evita tener que convertir un número binario completo a decimal antes de mostrarlo en los displays.
 
-El despliegue se implementó con multiplexado porque los cuatro displays comparten las mismas señales de segmentos. El sistema activa un ánodo a la vez y cambia rápidamente entre los cuatro dígitos, generando la percepción visual de que todos están encendidos al mismo tiempo.
+El despliegue se implementó mediante multiplexado porque los cuatro displays comparten las mismas señales de segmentos. El sistema activa un ánodo a la vez y cambia rápidamente entre los cuatro dígitos, generando la percepción visual de que todos los displays se encuentran encendidos de forma simultánea.
 
 ## 7. Subsistema de lectura del teclado hexadecimal
 
-El módulo `keypad_reader` se encarga de leer el teclado hexadecimal de matriz 4x4. Para hacerlo, genera un barrido sobre las filas mediante la señal `filas[3:0]` y lee el estado de las columnas mediante `columnas[3:0]`.
+El módulo `keypad_reader` se encarga de leer un teclado hexadecimal de matriz 4x4. Para esto, genera un barrido sobre las filas mediante la señal `filas[3:0]` y lee el estado de las columnas mediante `columnas[3:0]`.
 
-El teclado se trabaja con lógica activa en bajo. En reposo, las columnas se mantienen en `4'hF`. Cuando se presiona una tecla, una de las columnas cambia a cero durante la fila que está siendo activada. Con la combinación de fila activa y columna detectada se determina cuál tecla fue presionada.
+El teclado se trabaja con lógica activa en bajo. En reposo, las columnas se mantienen en `4'hF`. Cuando se presiona una tecla, una de las columnas cambia a cero durante la fila que se encuentra activa. Con la combinación de fila activa y columna detectada se obtiene el código de la tecla presionada.
 
-### Funcionamiento interno
+### 7.1 Funcionamiento interno
 
-El módulo contiene:
+El módulo está compuesto por los siguientes elementos internos:
 
-- Un contador `scan_cnt` que define el tiempo durante el cual se mantiene activa cada fila.
-- Un índice `fila_index` que selecciona cuál fila se activa.
-- Dos registros `columnas_ff1` y `columnas_sync` para sincronizar las entradas del teclado.
-- Una lógica combinacional que traduce la combinación fila-columna a un código hexadecimal.
-- Una señal `key_valid` que se activa durante un ciclo de reloj cuando se detecta una tecla válida.
-- Una señal `locked` que evita múltiples detecciones de una misma pulsación.
-- Un contador `release_cnt` que espera un tiempo después de liberar la tecla antes de permitir una nueva lectura.
+- `scan_cnt`: contador que define el tiempo durante el cual se mantiene activa cada fila.
+- `fila_index`: índice que selecciona cuál fila se activa durante el barrido.
+- `columnas_ff1` y `columnas_sync`: registros utilizados para sincronizar las entradas externas del teclado.
+- `key_code`: código hexadecimal obtenido a partir de la combinación fila-columna.
+- `key_valid`: pulso de un ciclo de reloj que indica la detección de una tecla válida.
+- `locked`: bandera que bloquea nuevas detecciones mientras una tecla permanece presionada.
+- `release_cnt`: contador que espera un tiempo de liberación antes de aceptar una nueva tecla.
 
-### Mapeo de teclas
-
-El mapeo usado en el diseño es:
+### 7.2 Mapeo de teclas
 
 | Fila activa | Columna detectada | Tecla |
-|---|---:|---:|
-| `1110` | `1110` | `*` / `E` |
+|---|---|---|
+| `1110` | `1110` | `* / E` |
 | `1110` | `1101` | `0` |
-| `1110` | `1011` | `#` / `F` |
+| `1110` | `1011` | `# / F` |
 | `1110` | `0111` | `D` |
 | `1101` | `1110` | `7` |
 | `1101` | `1101` | `8` |
@@ -118,17 +120,36 @@ El mapeo usado en el diseño es:
 
 Para la operación principal del sistema se utilizan los dígitos `0` a `9`, la tecla `*` como separador entre operandos y la tecla `#` como instrucción para mostrar el resultado.
 
+### 7.3 Diagrama del subsistema de lectura
+
+```mermaid
+flowchart LR
+    COL[columnas 3:0] --> SYNC[Sincronizador de columnas]
+    CLK[clk 27 MHz] --> SCAN[Contador de barrido]
+    SCAN --> FILA[fila_index]
+    FILA --> FILAS[filas 3:0]
+    SYNC --> DEC[Decodificador fila-columna]
+    FILA --> DEC
+    DEC --> LOCK[Lógica de bloqueo y liberación]
+    LOCK --> KV[key_value 3:0]
+    LOCK --> VALID[key_valid]
+```
+
+**Figura 1.** Diagrama de bloques del subsistema de lectura del teclado hexadecimal.
+
 ## 8. FSM de control principal
 
-La máquina de estados principal se encuentra en `fsm_top.sv`. Su función es decidir qué debe hacerse con cada tecla válida generada por el módulo de teclado.
+La máquina de estados principal se encuentra en el módulo `fsm_top.sv`. Su función es decidir qué acción debe realizarse cada vez que `keypad_reader` genera una tecla válida.
 
 La FSM tiene tres estados:
 
-1. `S_INPUT_A`: captura el primer número.
-2. `S_INPUT_B`: captura el segundo número.
-3. `S_RESULT`: muestra el resultado de la suma.
+| Estado | Función |
+|---|---|
+| `S_INPUT_A` | Captura el primer número. |
+| `S_INPUT_B` | Captura el segundo número. |
+| `S_RESULT` | Muestra el resultado de la suma. |
 
-### Estado `S_INPUT_A`
+### 8.1 Estado `S_INPUT_A`
 
 En este estado, las teclas numéricas se almacenan en los registros del primer operando `a3`, `a2`, `a1` y `a0`. Cada vez que se ingresa un nuevo dígito, los valores anteriores se desplazan hacia la izquierda:
 
@@ -139,17 +160,37 @@ a1 <= a0;
 a0 <= key_value;
 ```
 
-Esto permite ingresar los números de manera similar a una calculadora. Por ejemplo, al presionar `1`, `2`, `3`, el número queda almacenado como `0123`.
+Este mecanismo permite ingresar números de forma similar a una calculadora. Por ejemplo, al presionar `1`, `2`, `3`, el valor queda almacenado como `0123`. Cuando se presiona `*`, la FSM pasa al estado `S_INPUT_B` y limpia los registros del segundo operando.
 
-Cuando se presiona `*`, la FSM pasa al estado `S_INPUT_B` y limpia los registros del segundo operando.
+### 8.2 Estado `S_INPUT_B`
 
-### Estado `S_INPUT_B`
+En este estado, las teclas numéricas se almacenan en los registros `b3`, `b2`, `b1` y `b0`, usando el mismo esquema de desplazamiento. Si se presiona nuevamente `*`, se limpia el segundo operando. Si se presiona `#`, la FSM pasa al estado `S_RESULT`.
 
-En este estado, las teclas numéricas se almacenan en los registros `b3`, `b2`, `b1` y `b0`, usando el mismo esquema de desplazamiento. Si se presiona nuevamente `*`, se limpia el segundo operando. Si se presiona `#`, la FSM pasa a `S_RESULT`.
+### 8.3 Estado `S_RESULT`
 
-### Estado `S_RESULT`
+En este estado, el sistema muestra en los displays la suma calculada por el módulo `bcd4_adder`. Si el usuario presiona una tecla numérica, el sistema inicia una nueva operación y regresa a `S_INPUT_A`, usando esa tecla como primer dígito del nuevo operando. Si se presiona `*`, el sistema pasa nuevamente a la captura del segundo operando.
 
-En este estado, el sistema muestra la suma calculada por el sumador BCD. Si el usuario presiona una tecla numérica, el sistema inicia una nueva operación y regresa a `S_INPUT_A`, usando esa tecla como primer dígito del nuevo operando. Si se presiona `*`, se pasa nuevamente a captura del segundo operando.
+### 8.4 Diagrama de estados
+
+```mermaid
+stateDiagram-v2
+    [*] --> S_INPUT_A
+
+    S_INPUT_A --> S_INPUT_A: tecla 0-9 / desplazar A e ingresar dígito
+    S_INPUT_A --> S_INPUT_B: tecla * / limpiar B
+    S_INPUT_A --> S_INPUT_A: otra tecla / mantener estado
+
+    S_INPUT_B --> S_INPUT_B: tecla 0-9 / desplazar B e ingresar dígito
+    S_INPUT_B --> S_INPUT_B: tecla * / limpiar B
+    S_INPUT_B --> S_RESULT: tecla # / mostrar resultado
+    S_INPUT_B --> S_INPUT_B: otra tecla / mantener estado
+
+    S_RESULT --> S_INPUT_A: tecla 0-9 / iniciar nueva operación
+    S_RESULT --> S_INPUT_B: tecla * / ingresar nuevo B
+    S_RESULT --> S_RESULT: otra tecla / mantener resultado
+```
+
+**Figura 2.** Diagrama de estados de la FSM principal.
 
 ## 9. Subsistema de suma aritmética
 
@@ -163,14 +204,28 @@ La salida corresponde al resultado de la suma:
 - Resultado: `r3`, `r2`, `r1`, `r0`.
 - Bandera: `overflow`.
 
-El módulo suma primero las unidades, luego las decenas, centenas y millares. Cada dígito se corrige mediante la función `add_bcd_digit`, que convierte valores de 0 a 18 en un dígito decimal de 0 a 9 y un acarreo. De esta forma, si la suma de dos dígitos supera 9, se genera un carry hacia el siguiente dígito.
+El módulo suma primero las unidades, luego las decenas, centenas y millares. Cada dígito se corrige mediante la función `add_bcd_digit`, la cual convierte valores de 0 a 18 en un dígito decimal de 0 a 9 y un acarreo. De esta manera, cuando la suma de dos dígitos supera 9, se genera un `carry` hacia el siguiente dígito.
 
 Por ejemplo:
 
-- `4 + 6 = 10` produce dígito `0` y carry `1`.
-- `9 + 9 = 18` produce dígito `8` y carry `1`.
+| Operación | Dígito resultante | Carry |
+|---|---:|---:|
+| `4 + 6 = 10` | `0` | `1` |
+| `9 + 9 = 18` | `8` | `1` |
 
-Este criterio se eligió porque el sistema trabaja directamente con dígitos decimales individuales. Así se evita una conversión adicional entre binario y decimal para mostrar el resultado.
+Este criterio se eligió porque el sistema trabaja directamente con dígitos decimales individuales. Por esta razón, el resultado queda listo para ser enviado al bloque de despliegue sin requerir una conversión binario-decimal adicional.
+
+### 9.1 Diagrama del subsistema de suma
+
+```mermaid
+flowchart LR
+    A[a3 a2 a1 a0] --> ADD[Sumador BCD de 4 dígitos]
+    B[b3 b2 b1 b0] --> ADD
+    ADD --> R[r3 r2 r1 r0]
+    ADD --> OV[overflow]
+```
+
+**Figura 3.** Diagrama de bloques del subsistema de suma BCD.
 
 ## 10. Subsistema de despliegue en 7 segmentos
 
@@ -178,240 +233,195 @@ El despliegue está formado por los módulos `display_mux4` y `display_hex_decod
 
 El módulo `display_mux4` recibe cuatro dígitos de 4 bits (`d3`, `d2`, `d1`, `d0`) y selecciona cuál de ellos se envía al decodificador de 7 segmentos. Para esto utiliza un contador `refresh_count`, del cual se toman los bits más significativos para seleccionar el dígito activo.
 
-El módulo `display_hex_decoder` recibe un valor hexadecimal de 4 bits y entrega el patrón de segmentos correspondiente en la señal `seg[6:0]`. Aunque el decodificador permite mostrar valores de `0` a `F`, en la operación principal se utilizan principalmente valores decimales de `0` a `9`.
+El módulo `display_hex_decoder` recibe un valor hexadecimal de 4 bits y entrega el patrón de segmentos correspondiente en la señal `seg[6:0]`. Aunque el decodificador permite representar valores de `0` a `F`, durante la operación principal del sistema se utilizan principalmente valores decimales de `0` a `9`.
 
 La selección de ánodos se realiza con lógica activa en bajo:
 
 | Selector | Dígito mostrado | Ánodo activo |
-|---|---|---:|
+|---|---|---|
 | `00` | `d3` | `1110` |
 | `01` | `d2` | `1101` |
 | `10` | `d1` | `1011` |
 | `11` | `d0` | `0111` |
 
-## 11. Diagramas de bloques
-
-### 11.1 Diagrama general del sistema
+### 10.1 Diagrama del subsistema de despliegue
 
 ```mermaid
 flowchart LR
-    K[Teclado hexadecimal 4x4] --> KR[keypad_reader\nBarrido, sincronización y detección]
-    KR --> KV[key_value + key_valid]
-    KV --> FSM[fsm_top\nFSM de control y registros]
-    FSM --> A[Registro operando A\na3 a2 a1 a0]
-    FSM --> B[Registro operando B\nb3 b2 b1 b0]
-    A --> ADD[bcd4_adder\nSuma BCD]
-    B --> ADD
-    ADD --> R[Resultado\nr3 r2 r1 r0]
-    FSM --> MUX[display_mux4\nMultiplexado de 4 dígitos]
-    R --> MUX
-    MUX --> DEC[display_hex_decoder]
-    DEC --> SEG[Segmentos seven]
-    MUX --> AN[Ánodos anodo]
-```
-
-### 11.2 Subsistema de lectura de teclado
-
-```mermaid
-flowchart LR
-    CLK[Reloj 27 MHz] --> SCAN[Contador de barrido]
-    SCAN --> FILAS[Generación de filas activas]
-    COLUMNAS[Columnas del teclado] --> SYNC[Sincronizador de 2 FF]
-    SYNC --> DET[Detección fila-columna]
-    FILAS --> DET
-    DET --> MAP[Mapeo a código hexadecimal]
-    MAP --> LOCK[Lógica de bloqueo y liberación]
-    LOCK --> OUT[key_value / key_valid]
-```
-
-### 11.3 Subsistema de control y registros
-
-```mermaid
-flowchart TD
-    KEY[key_value / key_valid] --> FSM[FSM principal]
-    FSM --> RA[Registros A]
-    FSM --> RB[Registros B]
-    RA --> SEL[Selección de dato a mostrar]
-    RB --> SEL
-    RA --> ADD[Sumador BCD]
-    RB --> ADD
-    ADD --> SEL
-    SEL --> DISP[Display multiplexado]
-```
-
-### 11.4 Subsistema de suma
-
-```mermaid
-flowchart LR
-    A0[a0 + b0] --> C0[Corrección BCD\nr0, c0]
-    C0 --> A1[a1 + b1 + c0]
-    A1 --> C1[Corrección BCD\nr1, c1]
-    C1 --> A2[a2 + b2 + c1]
-    A2 --> C2[Corrección BCD\nr2, c2]
-    C2 --> A3[a3 + b3 + c2]
-    A3 --> C3[Corrección BCD\nr3, overflow]
-```
-
-### 11.5 Subsistema de despliegue
-
-```mermaid
-flowchart LR
-    D[Dígitos d3 d2 d1 d0] --> MUX[Multiplexor temporal]
-    CNT[refresh_count] --> MUX
+    D[d3 d2 d1 d0] --> MUX[Multiplexor de 4 dígitos]
+    CLK[clk 27 MHz] --> REF[Contador de refresco]
+    REF --> MUX
     MUX --> DIG[Dígito seleccionado]
-    DIG --> DEC[Decodificador 7 segmentos]
-    DEC --> SEVEN[seven 6:0]
-    MUX --> ANODO[anodo 3:0]
+    DIG --> DEC[Decodificador hexadecimal a 7 segmentos]
+    DEC --> SEG[seven 6:0]
+    MUX --> AN[anodo 3:0]
 ```
 
-## 12. Diagrama de estados
+**Figura 4.** Diagrama de bloques del subsistema de despliegue multiplexado.
 
-La FSM principal puede representarse mediante el siguiente diagrama:
+## 11. Interconexión general del sistema
+
+El sistema completo se organiza como una ruta de datos controlada por la FSM. El teclado entrega el dato de entrada, el lector de teclado lo convierte en un código hexadecimal válido, la FSM decide en cuál registro debe almacenarse, el sumador calcula el resultado y el bloque de display selecciona qué valor debe mostrarse.
 
 ```mermaid
-stateDiagram-v2
-    [*] --> S_INPUT_A
-
-    S_INPUT_A --> S_INPUT_A: tecla 0-9 / desplazar y guardar en A
-    S_INPUT_A --> S_INPUT_B: tecla * / limpiar B
-    S_INPUT_A --> S_INPUT_A: otra tecla
-
-    S_INPUT_B --> S_INPUT_B: tecla 0-9 / desplazar y guardar en B
-    S_INPUT_B --> S_INPUT_B: tecla * / limpiar B
-    S_INPUT_B --> S_RESULT: tecla # / mostrar suma
-    S_INPUT_B --> S_INPUT_B: otra tecla
-
-    S_RESULT --> S_INPUT_A: tecla 0-9 / nueva operación
-    S_RESULT --> S_INPUT_B: tecla * / capturar nuevo B
-    S_RESULT --> S_RESULT: otra tecla
+flowchart LR
+    K[Teclado hexadecimal] --> KR[keypad_reader]
+    KR -->|key_value, key_valid| FSM[fsm_top / FSM de control]
+    FSM --> RA[Registros operando A]
+    FSM --> RB[Registros operando B]
+    RA --> ADD[bcd4_adder]
+    RB --> ADD
+    ADD --> SEL[Selección de dato a mostrar]
+    FSM --> SEL
+    SEL --> DMUX[display_mux4]
+    DMUX --> DEC[display_hex_decoder]
+    DEC --> DISP[Displays de 7 segmentos]
 ```
 
-Este diagrama también debe incluirse en la bitácora, ya que representa el criterio de control usado para definir cuándo el sistema está capturando el primer número, el segundo número o mostrando el resultado.
+**Figura 5.** Diagrama general de interconexión del sistema.
 
-## 13. Testbench y simulaciones
+## 12. Testbench y simulaciones
 
 La verificación funcional del proyecto se realizó mediante testbenches individuales para los principales módulos del sistema. Los archivos de simulación se encuentran en la carpeta `src/sim`.
 
-### 13.1 Testbench del sumador BCD
+### 12.1 Testbench del sumador BCD
 
-El archivo `tb_bcd4_adder.sv` verifica el módulo `bcd4_adder`. Se aplican diferentes combinaciones de operandos y se compara la salida obtenida con el resultado esperado.
-
-Casos probados:
+El archivo `tb_bcd4_adder.sv` verifica el módulo `bcd4_adder`. En este testbench se aplican diferentes combinaciones de operandos y se compara la salida obtenida con el resultado esperado.
 
 | Operando A | Operando B | Resultado esperado |
 |---:|---:|---:|
-| 1234 | 0456 | 1690 |
-| 0999 | 0999 | 1998 |
-| 0000 | 0000 | 0000 |
-| 1111 | 2222 | 3333 |
-| 5000 | 4000 | 9000 |
+| `1234` | `0456` | `1690` |
+| `0999` | `0999` | `1998` |
+| `0000` | `0000` | `0000` |
+| `1111` | `2222` | `3333` |
+| `5000` | `4000` | `9000` |
 
-La simulación permite comprobar que el sumador maneja correctamente los acarreos entre dígitos decimales.
+La simulación confirma el comportamiento esperado del sumador y permite comprobar el manejo de acarreos entre dígitos decimales.
 
-### 13.2 Testbench del multiplexor de display
+```md
+![Simulación del sumador BCD](doc/img/tb_bcd4_adder.png)
+```
+
+**Figura 6.** Simulación funcional del módulo `bcd4_adder`.
+
+### 12.2 Testbench del multiplexor de display
 
 El archivo `tb_display_mux4.sv` prueba el módulo `display_mux4`. Inicialmente se cargan los dígitos `1`, `2`, `3`, `4`, y luego se cambian por `9`, `8`, `7`, `6`. La simulación permite verificar que la señal `anodo` cambia periódicamente y que la salida `seven` corresponde al dígito seleccionado en cada instante.
 
-### 13.3 Testbench del lector de teclado
+```md
+![Simulación del multiplexor de display](doc/img/tb_display_mux4.png)
+```
 
-El archivo `tb_keypad_reader.sv` valida el módulo `keypad_reader`. Para acelerar la simulación se modifican los parámetros `SCAN_DELAY` y `RELEASE_DELAY`. El testbench presiona virtualmente todas las teclas del teclado hexadecimal y comprueba que el módulo genera correctamente el código `key_value` y el pulso `key_valid`.
+**Figura 7.** Simulación funcional del módulo `display_mux4`.
 
-### 13.4 Testbench del sistema con FSM
+### 12.3 Testbench del lector de teclado
 
-El archivo `tb_fsm_top.sv` verifica el sistema integrado. Se simulan secuencias completas de entrada de datos:
+El archivo `tb_keypad_reader.sv` valida el módulo `keypad_reader`. Para acelerar la simulación se modifican los parámetros `SCAN_DELAY` y `RELEASE_DELAY`. El testbench presiona virtualmente las teclas del teclado hexadecimal y comprueba que el módulo genera correctamente el código `key_value` junto con el pulso `key_valid`.
+
+```md
+![Simulación del lector de teclado](doc/img/tb_keypad_reader.png)
+```
+
+**Figura 8.** Simulación funcional del módulo `keypad_reader`.
+
+### 12.4 Testbench del sistema con FSM
+
+El archivo `tb_fsm_top.sv` verifica el sistema integrado. En este testbench se simulan secuencias completas de entrada de datos, utilizando `*` para pasar al segundo operando y `#` para mostrar el resultado.
 
 | Secuencia simulada | Interpretación | Resultado esperado |
 |---|---|---:|
-| `1 2 3 4 * 4 5 6 #` | 1234 + 456 | 1690 |
-| `9 9 9 * 9 9 9 #` | 999 + 999 | 1998 |
+| `1 2 3 4 * 4 5 6 #` | `1234 + 456` | `1690` |
+| `9 9 9 * 9 9 9 #` | `999 + 999` | `1998` |
 
-En este testbench, la tecla `*` se usa para pasar al segundo operando y la tecla `#` para mostrar el resultado. La verificación se realiza observando los registros internos `d3`, `d2`, `d1` y `d0`, los cuales representan los cuatro dígitos mostrados en los displays.
+La verificación se realiza observando los registros internos `d3`, `d2`, `d1` y `d0`, los cuales representan los cuatro dígitos enviados al subsistema de despliegue. También se observan señales como `state`, `key_value`, `key_valid`, `filas`, `columnas`, `seven` y `anodo` para revisar la secuencia completa desde la entrada hasta la salida visual.
 
-### Imágenes recomendadas para esta sección
-
-Se recomienda incluir capturas de GTKWave donde se observen las siguientes señales:
-
-- `clk` y `rst_n`.
-- `filas` y `columnas`.
-- `key_value` y `key_valid`.
-- `state`.
-- Registros `a3:a0` y `b3:b0`.
-- Resultado `r3:r0`.
-- Señales `seven` y `anodo`.
-
-## 14. Consumo de recursos
-
-En esta sección se debe colocar el reporte de síntesis generado por las herramientas del flujo abierto. Deben incluirse, como mínimo, la cantidad de LUTs, flip-flops y celdas utilizadas.
-
-> Pendiente de completar con el reporte final de síntesis del proyecto.
-
-Formato recomendado:
-
-```text
-Number of wires:      [completar]
-Number of wire bits:  [completar]
-Number of cells:      [completar]
-DFF:                  [completar]
-LUT1:                 [completar]
-LUT2:                 [completar]
-LUT3:                 [completar]
-LUT4:                 [completar]
+```md
+![Simulación del sistema completo con FSM](doc/img/tb_fsm_top.png)
 ```
 
-## 15. Velocidad máxima de reloj
+**Figura 9.** Simulación funcional del sistema completo mediante `tb_fsm_top`.
 
-El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9K. Para validar este requisito, debe revisarse el reporte de temporización generado durante el proceso de place and route. El objetivo es comprobar que la frecuencia máxima soportada por el diseño sea mayor o igual a 27 MHz.
+## 13. Consumo de recursos
 
-> Pendiente de completar con el reporte final de temporización.
+El consumo de recursos debe obtenerse a partir del reporte de síntesis generado por las herramientas del flujo abierto. En esta sección se presenta la cantidad de recursos utilizados por el diseño dentro de la FPGA.
 
-Formato recomendado:
+| Recurso | Cantidad |
+|---|---:|
+| Wires | `[completar]` |
+| Wire bits | `[completar]` |
+| Cells | `[completar]` |
+| Flip-flops | `[completar]` |
+| LUT1 | `[completar]` |
+| LUT2 | `[completar]` |
+| LUT3 | `[completar]` |
+| LUT4 | `[completar]` |
 
-```text
-Frecuencia requerida: 27 MHz
-Frecuencia máxima reportada: [completar] MHz
-Slack: [completar]
-Conclusión: [cumple / no cumple]
+```md
+![Reporte de recursos de síntesis](doc/img/reporte_recursos.png)
 ```
 
-## 16. Problemas encontrados y soluciones
+**Figura 10.** Reporte de recursos utilizado para analizar el tamaño del diseño en la FPGA.
 
-Durante el desarrollo del sistema se identificaron varios puntos importantes:
+## 14. Reporte de temporización y frecuencia máxima
 
-1. **Lectura confiable del teclado**  
-   Las señales del teclado son externas y pueden generar lecturas inestables. Para resolverlo se implementó sincronización de dos flip-flops y una lógica de bloqueo que espera la liberación de la tecla antes de permitir una nueva lectura.
+El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9K. Para validar este requisito se revisa el reporte de temporización generado durante el proceso de síntesis, colocación y ruteo. El criterio de aceptación es que la frecuencia máxima reportada sea mayor o igual a la frecuencia requerida de 27 MHz.
 
-2. **Evitar múltiples capturas por una sola pulsación**  
-   Al mantener presionada una tecla, el sistema podía detectar la misma tecla más de una vez. Esto se resolvió usando la señal `locked` y el contador `release_cnt`.
+| Parámetro | Valor |
+|---|---:|
+| Frecuencia requerida | `27 MHz` |
+| Frecuencia máxima reportada | `[completar] MHz` |
+| Slack | `[completar]` |
+| Cumplimiento | `[cumple / no cumple]` |
 
-3. **Definición del flujo de operación**  
-   Era necesario distinguir cuándo una tecla numérica pertenecía al primer operando, al segundo operando o a una nueva operación. Para esto se implementó una FSM con tres estados: captura de A, captura de B y resultado.
+```md
+![Reporte de temporización](doc/img/reporte_timing.png)
+```
 
-4. **Representación decimal del resultado**  
-   Como el sistema debe mostrar valores decimales en displays, se decidió usar una suma BCD por dígitos. Esta solución simplifica el despliegue y permite conservar cada dígito listo para enviarse al decodificador de 7 segmentos.
+**Figura 11.** Reporte de temporización usado para verificar el cumplimiento de la frecuencia mínima requerida.
 
-5. **Diferencia entre `system_top` y `fsm_top`**  
-   Ambos módulos cumplen una función similar como módulo superior del sistema. Sin embargo, `fsm_top` organiza el control explícitamente mediante estados definidos (`S_INPUT_A`, `S_INPUT_B`, `S_RESULT`) e instancia el módulo `bcd4_adder`. En cambio, `system_top` integra más lógica directamente dentro del módulo superior usando banderas como `entering_B` y `show_result`. Para el informe se recomienda explicar `fsm_top` como la versión principal por ajustarse mejor al criterio de FSM solicitado.
+## 15. Análisis de problemas encontrados y soluciones aplicadas
 
-## 17. Recomendaciones de imágenes para el informe y la bitácora
+Durante el desarrollo del sistema se identificaron varios puntos importantes relacionados con la lectura del teclado, el control de operación y la representación decimal de los datos.
 
-Para completar el informe y la bitácora se recomienda agregar las siguientes imágenes:
+### 15.1 Lectura confiable del teclado
 
-1. Diagrama general del sistema completo.
-2. Diagrama del subsistema de lectura del teclado.
-3. Diagrama del subsistema de suma BCD.
-4. Diagrama del subsistema de despliegue multiplexado.
-5. Diagrama de estados de la FSM principal.
-6. Captura de GTKWave del testbench `tb_keypad_reader`.
-7. Captura de GTKWave del testbench `tb_fsm_top` mostrando una suma completa.
-8. Captura del reporte de recursos de síntesis.
-9. Captura del reporte de temporización donde se confirme operación a 27 MHz.
-10. Fotografía del montaje físico con teclado, FPGA y displays, si ya se tiene implementado.
+Las señales provenientes del teclado son externas y pueden generar lecturas inestables si se utilizan directamente. Para resolver este problema, las columnas se registraron mediante dos flip-flops antes de ingresar a la lógica principal del lector de teclado. Con esto se reduce el riesgo de metaestabilidad y se adapta la señal externa al dominio de reloj de la FPGA.
 
-## 18. Conclusiones
+### 15.2 Múltiples capturas por una sola pulsación
 
-El proyecto permitió implementar un sistema digital sincrónico completo en una FPGA, integrando lectura de señales externas, control secuencial, almacenamiento de datos, suma aritmética y visualización en displays de 7 segmentos. La división modular facilitó la verificación del sistema, ya que cada bloque pudo probarse de manera independiente antes de integrarse en el módulo superior.
+Al mantener presionada una tecla, el sistema podía detectar la misma pulsación más de una vez. Para evitarlo se implementó la señal `locked`, la cual bloquea nuevas detecciones después de capturar una tecla válida. El sistema vuelve a aceptar otra tecla únicamente cuando las columnas regresan al estado de reposo y se cumple el tiempo definido por `release_cnt`.
+
+### 15.3 Definición del flujo de operación
+
+El sistema debía distinguir si una tecla numérica pertenecía al primer operando, al segundo operando o a una nueva operación. Para resolverlo se implementó una FSM con tres estados: captura de A, captura de B y visualización del resultado. Esta estructura permite controlar el flujo de forma clara y reduce ambigüedades en la interpretación de las teclas.
+
+### 15.4 Representación decimal del resultado
+
+Como el resultado debe mostrarse en displays de 7 segmentos en formato decimal, se decidió trabajar con dígitos BCD. Esta representación simplifica el paso desde los registros del sistema hacia el despliegue, ya que cada dígito puede enviarse directamente al decodificador de 7 segmentos.
+
+### 15.5 Diferencia entre `system_top` y `fsm_top`
+
+Durante el desarrollo se trabajaron dos módulos superiores similares. El módulo `system_top` integra parte de la lógica directamente mediante banderas como `entering_B` y `show_result`. En cambio, `fsm_top` organiza el control de forma explícita mediante los estados `S_INPUT_A`, `S_INPUT_B` y `S_RESULT`, además de instanciar el módulo `bcd4_adder`. Por esta razón, `fsm_top` se considera la versión principal para la descripción del diseño final.
+
+## 16. Implementación física
+
+La implementación física del sistema conecta la FPGA Tang Nano 9K con el teclado hexadecimal y los cuatro displays de 7 segmentos. El teclado funciona como dispositivo de entrada, mientras que los displays se utilizan para mostrar el número que se está ingresando o el resultado de la suma.
+
+```md
+![Montaje físico del sistema](doc/img/montaje_fisico.png)
+```
+
+**Figura 12.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
+
+## 17. Conclusiones
+
+El proyecto permitió implementar un sistema digital sincrónico completo en una FPGA, integrando lectura de señales externas, control secuencial, almacenamiento de datos, suma aritmética y visualización en displays de 7 segmentos. La división modular facilitó la verificación del sistema, ya que cada bloque pudo analizarse por separado antes de integrarse en el módulo superior.
 
 La FSM principal permitió controlar de forma clara el flujo de operación del sistema, diferenciando entre la captura del primer número, la captura del segundo número y la visualización del resultado. Además, el uso de registros y sincronización permitió adaptar las señales externas del teclado al dominio de reloj interno de la FPGA.
+
+La implementación de la suma en formato BCD resultó adecuada para este proyecto porque los datos ingresados y desplegados son decimales. Esto simplificó la conexión entre la lógica aritmética y el subsistema de visualización. Finalmente, el multiplexado permitió controlar cuatro displays de 7 segmentos utilizando una cantidad reducida de señales.
+
+Como mejora futura, se podría ampliar el control del sistema para manejar entradas de más dígitos, indicar explícitamente el estado de overflow y agregar una función de limpieza general mediante una tecla dedicada.
 
 La implementación de la suma en formato BCD resultó adecuada para este proyecto, ya que los datos ingresados y desplegados son decimales. Esto simplificó la conexión entre la lógica aritmética y el subsistema de visualización. Finalmente, el uso de multiplexado permitió controlar cuatro displays de 7 segmentos utilizando una cantidad reducida de señales.
 
