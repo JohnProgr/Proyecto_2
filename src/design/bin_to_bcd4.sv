@@ -1,43 +1,59 @@
-module bin_to_bcd4 (
-    input  logic [13:0] bin,
-
-    output logic [3:0] thousands,
-    output logic [3:0] hundreds,
-    output logic [3:0] tens,
-    output logic [3:0] ones
+module bin_to_bcd4 #(
+    parameter IN_WIDTH = 11,
+    parameter DIGITS = 4
+)(
+    input  logic                   clk,
+    input  logic                   rst_n,
+    input  logic                   start,
+    input  logic [IN_WIDTH-1:0]    bin_in,
+    output logic [3:0]             bcd3, bcd2, bcd1, bcd0,
+    output logic                   done
 );
 
-    always_comb begin
-        thousands = 4'd0;
-        hundreds  = 4'd0;
-        tens      = 4'd0;
-        ones      = 4'd0;
+    logic [IN_WIDTH-1:0] bin_val;
+    logic [3:0] thousands, hundreds, tens, ones;
+    logic processing;
+    int i;
 
-        case (bin)
-            14'd0:  begin tens = 4'd0; ones = 4'd0; end
-            14'd1:  begin tens = 4'd0; ones = 4'd1; end
-            14'd2:  begin tens = 4'd0; ones = 4'd2; end
-            14'd3:  begin tens = 4'd0; ones = 4'd3; end
-            14'd4:  begin tens = 4'd0; ones = 4'd4; end
-            14'd5:  begin tens = 4'd0; ones = 4'd5; end
-            14'd6:  begin tens = 4'd0; ones = 4'd6; end
-            14'd7:  begin tens = 4'd0; ones = 4'd7; end
-            14'd8:  begin tens = 4'd0; ones = 4'd8; end
-            14'd9:  begin tens = 4'd0; ones = 4'd9; end
-            14'd10: begin tens = 4'd1; ones = 4'd0; end
-            14'd11: begin tens = 4'd1; ones = 4'd1; end
-            14'd12: begin tens = 4'd1; ones = 4'd2; end
-            14'd13: begin tens = 4'd1; ones = 4'd3; end
-            14'd14: begin tens = 4'd1; ones = 4'd4; end
-            14'd15: begin tens = 4'd1; ones = 4'd5; end
-
-            default: begin
-                thousands = 4'd0;
-                hundreds  = 4'd0;
-                tens      = 4'd0;
-                ones      = 4'd0;
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            bin_val <= '0;
+            {thousands, hundreds, tens, ones} <= '0;
+            processing <= 1'b0;
+            done <= 1'b0;
+        end else begin
+            if (start && !processing) begin
+                bin_val <= bin_in;
+                thousands <= 4'd0;
+                hundreds <= 4'd0;
+                tens <= 4'd0;
+                ones <= 4'd0;
+                processing <= 1'b1;
+                done <= 1'b0;
+            end else if (processing) begin
+                if (bin_val >= 1000) begin
+                    thousands <= thousands + 1;
+                    bin_val <= bin_val - 1000;
+                end else if (bin_val >= 100) begin
+                    hundreds <= hundreds + 1;
+                    bin_val <= bin_val - 100;
+                end else if (bin_val >= 10) begin
+                    tens <= tens + 1;
+                    bin_val <= bin_val - 10;
+                end else begin
+                    ones <= bin_val[3:0];
+                    processing <= 1'b0;
+                    done <= 1'b1;
+                end
+            end else begin
+                done <= 1'b0;
             end
-        endcase
+        end
     end
+
+    assign bcd3 = thousands;
+    assign bcd2 = hundreds;
+    assign bcd1 = tens;
+    assign bcd0 = ones;
 
 endmodule
