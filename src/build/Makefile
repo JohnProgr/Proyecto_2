@@ -9,24 +9,24 @@ DEVICE = GW1NR-LV9QN88PC6/I5
 PROYECT = sumador
 
 #Fuentes de diseno
-SOURCES := ../design/debounce_sync.sv ../design/keypad_reader.sv ../design/keypad_scanner.sv ../design/key_edge_detect.sv ../design/bcd3_to_bin.sv ../design/binary_adder.sv ../design/bin_to_bcd4.sv ../design/arithmetic_top.sv ../design/display_hex_decoder.sv ../design/display_driver_7seg.sv ../design/display_mux4.sv ../design/calculator_top.sv ../design/system_top.sv
+SOURCES := ../design/sync_2ff.sv ../design/keypad_reader.sv ../design/display_hex_decoder.sv ../design/display_mux4.sv ../design/bcd4_adder.sv ../design/fsm_top.sv
 #Si quieren indicarlas una a una, pueden hacerlo como en este ejemplo:
 #SOURCES = ../design/module_top_deco_gray.v ../design/module_input_deco_gray.v 
 
 #Fuente de simulacion
 #aca va el testbench que quieran simular
-TESTBENCH = ../sim/tb_top.sv
+TESTBENCH = ../sim/tb_fsm_top.sv
 
 # Constraints para el proyecto
 #aca va el archivo de constraints del proyecto
 CONSTRAINTS = ../constr/Modulo_Pines.cst
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
-TOP_DESIGN = system_top
-TOP_TB = tb_top
+TOP_DESIGN = fsm_top
+TOP_TB = tb_fsm_top
 
 #nombre del vcd que va a generar el tb
-VCD_FILE = tb_top_system.vcd
+VCD_FILE = tb_fsm_top.vcd
 
 
 all: synth pnr bitstream load

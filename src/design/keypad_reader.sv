@@ -14,10 +14,24 @@ module keypad_reader (
     logic [15:0] scan_cnt;
     logic [17:0] release_cnt;
 
+    logic [3:0] columnas_ff1;
+    logic [3:0] columnas_sync;
+
     logic [3:0] col_read;
     logic [3:0] key_code;
     logic       detected;
     logic       locked;
+
+    // Sincronizador de 2 flip-flops para entradas asíncronas del teclado
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            columnas_ff1  <= 4'hF;
+            columnas_sync <= 4'hF;
+        end else begin
+            columnas_ff1  <= columnas;
+            columnas_sync <= columnas_ff1;
+        end
+    end
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -47,7 +61,7 @@ module keypad_reader (
         if (!rst_n)
             col_read <= 4'hF;
         else
-            col_read <= columnas;
+            col_read <= columnas_sync;
     end
 
     always_comb begin
@@ -57,10 +71,10 @@ module keypad_reader (
         case (fila_index)
             2'd0: begin
                 case (col_read)
-                    4'hE: begin key_code = 4'hE; detected = 1'b1; end
-                    4'hD: begin key_code = 4'h0; detected = 1'b1; end
-                    4'hB: begin key_code = 4'hF; detected = 1'b1; end
-                    4'h7: begin key_code = 4'hD; detected = 1'b1; end
+                    4'hE: begin key_code = 4'hE; detected = 1'b1; end // *
+                    4'hD: begin key_code = 4'h0; detected = 1'b1; end // 0
+                    4'hB: begin key_code = 4'hF; detected = 1'b1; end // #
+                    4'h7: begin key_code = 4'hD; detected = 1'b1; end // D
                     default: detected = 1'b0;
                 endcase
             end
