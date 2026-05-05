@@ -192,6 +192,32 @@ stateDiagram-v2
 
 **Figura 2.** Diagrama de estados de la FSM principal.
 
+### 8.5 Diagrama del subsistema de control y registros
+```mermaid
+flowchart LR
+    KV[key_value 3:0] --> FSM[FSM de control]
+    VALID[key_valid] --> FSM
+    FSM --> CTRL[Señales de control]
+
+    CTRL --> REGA[Registros operando A]
+    CTRL --> REGB[Registros operando B]
+
+    KV --> REGA
+    KV --> REGB
+
+    REGA --> AOUT[a3 a2 a1 a0]
+    REGB --> BOUT[b3 b2 b1 b0]
+
+    FSM --> SEL[Selección de dato mostrado]
+    AOUT --> SEL
+    BOUT --> SEL
+    R[r3 r2 r1 r0] --> SEL
+
+    SEL --> DOUT[d3 d2 d1 d0]
+```
+
+**Figura 3.** Diagrama de bloques del subsistema de control y registros.
+
 ## 9. Subsistema de suma aritmética
 
 La suma se implementa en el módulo `bcd4_adder.sv`. Este bloque recibe dos operandos de cuatro dígitos BCD:
