@@ -298,9 +298,7 @@ El archivo `tb_bcd4_adder.sv` verifica el módulo `bcd4_adder`. En este testbenc
 
 La simulación confirma el comportamiento esperado del sumador y permite comprobar el manejo de acarreos entre dígitos decimales.
 
-```md
 ![Simulación del sumador BCD](doc/img/tb_bcd4_adder.png)
-```
 
 **Figura 6.** Simulación funcional del módulo `bcd4_adder`.
 
@@ -308,9 +306,7 @@ La simulación confirma el comportamiento esperado del sumador y permite comprob
 
 El archivo `tb_display_mux4.sv` prueba el módulo `display_mux4`. Inicialmente se cargan los dígitos `1`, `2`, `3`, `4`, y luego se cambian por `9`, `8`, `7`, `6`. La simulación permite verificar que la señal `anodo` cambia periódicamente y que la salida `seven` corresponde al dígito seleccionado en cada instante.
 
-```md
 ![Simulación del multiplexor de display](doc/img/tb_display_mux4.png)
-```
 
 **Figura 7.** Simulación funcional del módulo `display_mux4`.
 
@@ -318,9 +314,7 @@ El archivo `tb_display_mux4.sv` prueba el módulo `display_mux4`. Inicialmente s
 
 El archivo `tb_keypad_reader.sv` valida el módulo `keypad_reader`. Para acelerar la simulación se modifican los parámetros `SCAN_DELAY` y `RELEASE_DELAY`. El testbench presiona virtualmente las teclas del teclado hexadecimal y comprueba que el módulo genera correctamente el código `key_value` junto con el pulso `key_valid`.
 
-```md
 ![Simulación del lector de teclado](doc/img/tb_keypad_reader.png)
-```
 
 **Figura 8.** Simulación funcional del módulo `keypad_reader`.
 
@@ -335,9 +329,7 @@ El archivo `tb_fsm_top.sv` verifica el sistema integrado. En este testbench se s
 
 La verificación se realiza observando los registros internos `d3`, `d2`, `d1` y `d0`, los cuales representan los cuatro dígitos enviados al subsistema de despliegue. También se observan señales como `state`, `key_value`, `key_valid`, `filas`, `columnas`, `seven` y `anodo` para revisar la secuencia completa desde la entrada hasta la salida visual.
 
-```md
 ![Simulación del sistema completo con FSM](doc/img/tb_fsm_top.png)
-```
 
 **Figura 9.** Simulación funcional del sistema completo mediante `tb_fsm_top`.
 
@@ -356,11 +348,23 @@ El consumo de recursos debe obtenerse a partir del reporte de síntesis generado
 | LUT3 | `[completar]` |
 | LUT4 | `[completar]` |
 
-```md
 ![Reporte de recursos de síntesis](doc/img/reporte_recursos.png)
-```
 
 **Figura 10.** Reporte de recursos utilizado para analizar el tamaño del diseño en la FPGA.
+
+### 13.1 Consumo de potencia
+
+El consumo de potencia se completa a partir del reporte generado por las herramientas de implementación. Este dato permite estimar el comportamiento energético del diseño dentro de la FPGA.
+
+| Parámetro | Valor |
+|---|---:|
+| Potencia total reportada | `[completar]` |
+| Potencia dinámica | `[completar]` |
+| Potencia estática | `[completar]` |
+
+![Reporte de consumo de potencia](doc/img/reporte_potencia.png)
+
+**Figura 11.** Reporte de potencia generado por las herramientas de implementación.
 
 ## 14. Reporte de temporización y frecuencia máxima
 
@@ -373,11 +377,9 @@ El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9
 | Slack | `[completar]` |
 | Cumplimiento | `[cumple / no cumple]` |
 
-```md
 ![Reporte de temporización](doc/img/reporte_timing.png)
-```
 
-**Figura 11.** Reporte de temporización usado para verificar el cumplimiento de la frecuencia mínima requerida.
+**Figura 12.** Reporte de temporización usado para verificar el cumplimiento de la frecuencia mínima requerida.
 
 ## 15. Análisis de problemas encontrados y soluciones aplicadas
 
@@ -407,13 +409,58 @@ Durante el desarrollo se trabajaron dos módulos superiores similares. El módul
 
 La implementación física del sistema conecta la FPGA Tang Nano 9K con el teclado hexadecimal y los cuatro displays de 7 segmentos. El teclado funciona como dispositivo de entrada, mientras que los displays se utilizan para mostrar el número que se está ingresando o el resultado de la suma.
 
-```md
 ![Montaje físico del sistema](doc/img/montaje_fisico.png)
-```
 
-**Figura 12.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
+**Figura 13.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
 
-## 17. Conclusiones
+## 17. Ejercicios experimentales
+
+Los ejercicios experimentales se completan con las mediciones realizadas en laboratorio. En esta versión del informe se deja preparada la estructura para agregar los resultados cuando se finalicen las pruebas físicas correspondientes.
+
+### 17.1 Contadores sincrónicos 74LS163
+
+En este ejercicio se debe alambrar la conexión de dos contadores sincrónicos 74LS163 en cascada y generar la señal de reloj desde la FPGA. El objetivo es verificar el comportamiento del contador mediante el analizador lógico y analizar las señales de acarreo entre ambos circuitos integrados.
+
+![Montaje de contadores 74LS163](doc/img/ejercicio_contadores_montaje.png)
+
+**Figura 14.** Montaje experimental de los contadores sincrónicos 74LS163 en cascada.
+
+| Elemento medido o analizado | Resultado |
+|---|---|
+| Frecuencia de reloj generada desde la FPGA | `[completar]` |
+| Señal usada para disparo del analizador lógico | `[completar]` |
+| Tiempo de cambio luego del flanco positivo de reloj | `[completar]` |
+| Observación de la señal RCO | `[completar]` |
+| Presencia de fallas o glitches en RCO | `[completar]` |
+
+![Captura del analizador lógico para contadores](doc/img/ejercicio_contadores_analizador.png)
+
+**Figura 15.** Captura del analizador lógico durante la prueba de los contadores sincrónicos.
+
+La salida `RCO` se analiza como señal de acarreo del contador menos significativo hacia el contador más significativo. La explicación final de su funcionamiento, junto con la diferencia entre las entradas `T` y `P` o `ENT` y `ENP`, se completa con base en la medición y en la hoja de datos del circuito integrado utilizado.
+
+### 17.2 Cerrojo Set-Reset con compuertas NAND
+
+En este ejercicio se debe construir un cerrojo Set-Reset utilizando compuertas NAND 74HC00. El circuito se prueba con señales de entrada `S` y `R`, y se verifica el comportamiento de las salidas `Q` y `QN` en función del estado del reloj.
+
+![Montaje del cerrojo SR](doc/img/ejercicio_sr_montaje.png)
+
+**Figura 16.** Montaje experimental del cerrojo SR construido con compuertas NAND.
+
+| CLK | S | R | Q | QN | Descripción |
+|---|---|---|---|---|---|
+| `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` |
+| `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` |
+| `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` |
+| `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` | `[completar]` |
+
+![Captura del analizador lógico para cerrojo SR](doc/img/ejercicio_sr_analizador.png)
+
+**Figura 17.** Captura del analizador lógico durante la prueba del cerrojo SR.
+
+El análisis final debe explicar el funcionamiento del cerrojo, el efecto del reloj sobre las entradas `S` y `R`, y el comportamiento esperado cuando ambas entradas se mantienen activas al mismo tiempo.
+
+## 18. Conclusiones
 
 El proyecto permitió implementar un sistema digital sincrónico completo en una FPGA, integrando lectura de señales externas, control secuencial, almacenamiento de datos, suma aritmética y visualización en displays de 7 segmentos. La división modular facilitó la verificación del sistema, ya que cada bloque pudo analizarse por separado antes de integrarse en el módulo superior.
 
@@ -422,7 +469,6 @@ La FSM principal permitió controlar de forma clara el flujo de operación del s
 La implementación de la suma en formato BCD resultó adecuada para este proyecto porque los datos ingresados y desplegados son decimales. Esto simplificó la conexión entre la lógica aritmética y el subsistema de visualización. Finalmente, el multiplexado permitió controlar cuatro displays de 7 segmentos utilizando una cantidad reducida de señales.
 
 Como mejora futura, se podría ampliar el control del sistema para manejar entradas de más dígitos, indicar explícitamente el estado de overflow y agregar una función de limpieza general mediante una tecla dedicada.
-
 La implementación de la suma en formato BCD resultó adecuada para este proyecto, ya que los datos ingresados y desplegados son decimales. Esto simplificó la conexión entre la lógica aritmética y el subsistema de visualización. Finalmente, el uso de multiplexado permitió controlar cuatro displays de 7 segmentos utilizando una cantidad reducida de señales.
 
 Como trabajo pendiente, se debe completar el informe con capturas reales de simulación, reporte de recursos, reporte de temporización y evidencia del montaje físico o pruebas en hardware.
