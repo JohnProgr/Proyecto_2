@@ -324,7 +324,7 @@ El archivo `tb_bcd4_adder.sv` verifica el módulo `bcd4_adder`. En este testbenc
 
 La simulación confirma el comportamiento esperado del sumador y permite comprobar el manejo de acarreos entre dígitos decimales.
 
-![Simulación del sumador BCD](doc/img/tb_bcd4_adder.png)
+![Simulación del sumador BCD](doc/img/tb_bcd4_adder.jpeg)
 
 **Figura 7.** Simulación funcional del módulo `bcd4_adder`.
 
@@ -332,7 +332,7 @@ La simulación confirma el comportamiento esperado del sumador y permite comprob
 
 El archivo `tb_display_mux4.sv` prueba el módulo `display_mux4`. Inicialmente se cargan los dígitos `1`, `2`, `3`, `4`, y luego se cambian por `9`, `8`, `7`, `6`. La simulación permite verificar que la señal `anodo` cambia periódicamente y que la salida `seven` corresponde al dígito seleccionado en cada instante.
 
-![Simulación del multiplexor de display](doc/img/tb_display_mux4.png)
+![Simulación del multiplexor de display](doc/img/tb_display_mux4.jpeg)
 
 **Figura 8.** Simulación funcional del módulo `display_mux4`.
 
@@ -340,7 +340,7 @@ El archivo `tb_display_mux4.sv` prueba el módulo `display_mux4`. Inicialmente s
 
 El archivo `tb_keypad_reader.sv` valida el módulo `keypad_reader`. Para acelerar la simulación se modifican los parámetros `SCAN_DELAY` y `RELEASE_DELAY`. El testbench presiona virtualmente las teclas del teclado hexadecimal y comprueba que el módulo genera correctamente el código `key_value` junto con el pulso `key_valid`.
 
-![Simulación del lector de teclado](doc/img/tb_keypad_reader.png)
+![Simulación del lector de teclado](doc/img/tb_keypad_reader.jpeg)
 
 **Figura 9.** Simulación funcional del módulo `keypad_reader`.
 
@@ -355,7 +355,7 @@ El archivo `tb_fsm_top.sv` verifica el sistema integrado. En este testbench se s
 
 La verificación se realiza observando los registros internos `d3`, `d2`, `d1` y `d0`, los cuales representan los cuatro dígitos enviados al subsistema de despliegue. También se observan señales como `state`, `key_value`, `key_valid`, `filas`, `columnas`, `seven` y `anodo` para revisar la secuencia completa desde la entrada hasta la salida visual.
 
-![Simulación del sistema completo con FSM](doc/img/tb_fsm_top.png)
+![Simulación del sistema completo con FSM](doc/img/tb_fsm_top.jpeg)
 
 **Figura 10.** Simulación funcional del sistema completo mediante `tb_fsm_top`.
 
