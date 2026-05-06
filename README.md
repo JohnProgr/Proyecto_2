@@ -251,7 +251,7 @@ flowchart LR
     ADD --> OV[overflow]
 ```
 
-**Figura 3.** Diagrama de bloques del subsistema de suma BCD.
+**Figura 4.** Diagrama de bloques del subsistema de suma BCD.
 
 ## 10. Subsistema de despliegue en 7 segmentos
 
@@ -283,7 +283,7 @@ flowchart LR
     MUX --> AN[anodo 3:0]
 ```
 
-**Figura 4.** Diagrama de bloques del subsistema de despliegue multiplexado.
+**Figura 5.** Diagrama de bloques del subsistema de despliegue multiplexado.
 
 ## 11. Interconexión general del sistema
 
@@ -304,7 +304,7 @@ flowchart LR
     DEC --> DISP[Displays de 7 segmentos]
 ```
 
-**Figura 5.** Diagrama general de interconexión del sistema.
+**Figura 6.** Diagrama general de interconexión del sistema.
 
 ## 12. Testbench y simulaciones
 
@@ -326,7 +326,7 @@ La simulación confirma el comportamiento esperado del sumador y permite comprob
 
 ![Simulación del sumador BCD](doc/img/tb_bcd4_adder.png)
 
-**Figura 6.** Simulación funcional del módulo `bcd4_adder`.
+**Figura 7.** Simulación funcional del módulo `bcd4_adder`.
 
 ### 12.2 Testbench del multiplexor de display
 
@@ -334,7 +334,7 @@ El archivo `tb_display_mux4.sv` prueba el módulo `display_mux4`. Inicialmente s
 
 ![Simulación del multiplexor de display](doc/img/tb_display_mux4.png)
 
-**Figura 7.** Simulación funcional del módulo `display_mux4`.
+**Figura 8.** Simulación funcional del módulo `display_mux4`.
 
 ### 12.3 Testbench del lector de teclado
 
@@ -342,7 +342,7 @@ El archivo `tb_keypad_reader.sv` valida el módulo `keypad_reader`. Para acelera
 
 ![Simulación del lector de teclado](doc/img/tb_keypad_reader.png)
 
-**Figura 8.** Simulación funcional del módulo `keypad_reader`.
+**Figura 9.** Simulación funcional del módulo `keypad_reader`.
 
 ### 12.4 Testbench del sistema con FSM
 
@@ -357,7 +357,7 @@ La verificación se realiza observando los registros internos `d3`, `d2`, `d1` y
 
 ![Simulación del sistema completo con FSM](doc/img/tb_fsm_top.png)
 
-**Figura 9.** Simulación funcional del sistema completo mediante `tb_fsm_top`.
+**Figura 10.** Simulación funcional del sistema completo mediante `tb_fsm_top`.
 
 ## 13. Consumo de recursos
 
@@ -376,7 +376,7 @@ El consumo de recursos debe obtenerse a partir del reporte de síntesis generado
 
 ![Reporte de recursos de síntesis](doc/img/reporte_recursos.png)
 
-**Figura 10.** Reporte de recursos utilizado para analizar el tamaño del diseño en la FPGA.
+**Figura 11.** Reporte de recursos utilizado para analizar el tamaño del diseño en la FPGA.
 
 ### 13.1 Consumo de potencia
 
@@ -390,7 +390,7 @@ El consumo de potencia se completa a partir del reporte generado por las herrami
 
 ![Reporte de consumo de potencia](doc/img/reporte_potencia.png)
 
-**Figura 11.** Reporte de potencia generado por las herramientas de implementación.
+**Figura 12.** Reporte de potencia generado por las herramientas de implementación.
 
 ## 14. Reporte de temporización y frecuencia máxima
 
@@ -405,7 +405,7 @@ El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9
 
 ![Reporte de temporización](doc/img/reporte_timing.png)
 
-**Figura 12.** Reporte de temporización usado para verificar el cumplimiento de la frecuencia mínima requerida.
+**Figura 13.** Reporte de temporización usado para verificar el cumplimiento de la frecuencia mínima requerida.
 
 ## 15. Análisis de problemas encontrados y soluciones aplicadas
 
@@ -435,9 +435,9 @@ Durante el desarrollo se trabajaron dos módulos superiores similares. El módul
 
 La implementación física del sistema conecta la FPGA Tang Nano 9K con el teclado hexadecimal y los cuatro displays de 7 segmentos. El teclado funciona como dispositivo de entrada, mientras que los displays se utilizan para mostrar el número que se está ingresando o el resultado de la suma.
 
-![Montaje físico del sistema](doc/img/montaje_fisico.png)
+![Montaje físico del sistema](doc/img/montaje_fisico.jpeg)
 
-**Figura 13.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
+**Figura 14.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
 
 ## 17. Ejercicios experimentales
 
@@ -449,7 +449,7 @@ En este ejercicio se debe alambrar la conexión de dos contadores sincrónicos 7
 
 ![Montaje de contadores 74LS163](doc/img/ejercicio_contadores_montaje.png)
 
-**Figura 14.** Montaje experimental de los contadores sincrónicos 74LS163 en cascada.
+**Figura 15.** Montaje experimental de los contadores sincrónicos 74LS163 en cascada.
 
 | Elemento medido o analizado | Resultado |
 |---|---|
@@ -461,7 +461,7 @@ En este ejercicio se debe alambrar la conexión de dos contadores sincrónicos 7
 
 ![Captura del analizador lógico para contadores](doc/img/ejercicio_contadores_analizador.png)
 
-**Figura 15.** Captura del analizador lógico durante la prueba de los contadores sincrónicos.
+**Figura 16.** Captura del analizador lógico durante la prueba de los contadores sincrónicos.
 
 La salida `RCO` se analiza como señal de acarreo del contador menos significativo hacia el contador más significativo. La explicación final de su funcionamiento, junto con la diferencia entre las entradas `T` y `P` o `ENT` y `ENP`, se completa con base en la medición y en la hoja de datos del circuito integrado utilizado.
 
@@ -471,7 +471,7 @@ En este ejercicio se debe construir un cerrojo Set-Reset utilizando compuertas N
 
 ![Montaje del cerrojo SR](doc/img/ejercicio_sr_montaje.png)
 
-**Figura 16.** Montaje experimental del cerrojo SR construido con compuertas NAND.
+**Figura 17.** Montaje experimental del cerrojo SR construido con compuertas NAND.
 
 | CLK | S | R | Q | QN | Descripción |
 |---|---|---|---|---|---|
@@ -482,7 +482,7 @@ En este ejercicio se debe construir un cerrojo Set-Reset utilizando compuertas N
 
 ![Captura del analizador lógico para cerrojo SR](doc/img/ejercicio_sr_analizador.png)
 
-**Figura 17.** Captura del analizador lógico durante la prueba del cerrojo SR.
+**Figura 18.** Captura del analizador lógico durante la prueba del cerrojo SR.
 
 El análisis final debe explicar el funcionamiento del cerrojo, el efecto del reloj sobre las entradas `S` y `R`, y el comportamiento esperado cuando ambas entradas se mantienen activas al mismo tiempo.
 
