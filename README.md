@@ -381,16 +381,6 @@ El consumo de recursos debe obtenerse a partir del reporte de síntesis generado
 
 El reporte de utilización muestra que el diseño utiliza 560 de 8640 slices disponibles, equivalente a un 6 % del dispositivo. Además, se utilizan 21 pines de entrada/salida de 274 disponibles, equivalente a un 7 %. Esto indica que el diseño ocupa una fracción pequeña de los recursos disponibles en la FPGA.
 
-### 13.1 Consumo de potencia
-
-El consumo de potencia se completa a partir del reporte generado por las herramientas de implementación. Este dato permite estimar el comportamiento energético del diseño dentro de la FPGA.
-
-| Parámetro | Valor |
-|---|---:|
-| Potencia total reportada | `[completar]` |
-| Potencia dinámica | `[completar]` |
-| Potencia estática | `[completar]` |
-
 ## 14. Reporte de temporización y frecuencia máxima
 
 El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9K. Para validar este requisito se revisa el reporte de temporización generado durante el proceso de síntesis, colocación y ruteo. El criterio de aceptación es que la frecuencia máxima reportada sea mayor o igual a la frecuencia requerida de 27 MHz.
