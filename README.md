@@ -365,18 +365,21 @@ El consumo de recursos debe obtenerse a partir del reporte de síntesis generado
 
 | Recurso | Cantidad |
 |---|---:|
-| Wires | `[completar]` |
-| Wire bits | `[completar]` |
-| Cells | `[completar]` |
-| Flip-flops | `[completar]` |
-| LUT1 | `[completar]` |
-| LUT2 | `[completar]` |
-| LUT3 | `[completar]` |
-| LUT4 | `[completar]` |
+| VCC | 1 / 1 (100 %) |
+| SLICE | 560 / 8640 (6 %) |
+| IOB | 21 / 274 (7 %) |
+| ODDR | 0 / 274 (0 %) |
+| MUX2_LUT5 | 95 / 4320 (2 %) |
+| MUX2_LUT6 | 37 / 2160 (1 %) |
+| MUX2_LUT7 | 14 / 1080 (1 %) |
+| MUX2_LUT8 | 7 / 1056 (0 %) |
+| GND | 1 / 1 (100 %) |
+| RAMW | 0 / 270 (0 %) |
+| GSR | 1 / 1 (100 %) |
+| OSC | 0 / 1 (0 %) |
+| rPLL | 0 / 2 (0 %) |
 
-![Reporte de recursos de síntesis](doc/img/reporte_recursos.png)
-
-**Figura 11.** Reporte de recursos utilizado para analizar el tamaño del diseño en la FPGA.
+El reporte de utilización muestra que el diseño utiliza 560 de 8640 slices disponibles, equivalente a un 6 % del dispositivo. Además, se utilizan 21 pines de entrada/salida de 274 disponibles, equivalente a un 7 %. Esto indica que el diseño ocupa una fracción pequeña de los recursos disponibles en la FPGA.
 
 ### 13.1 Consumo de potencia
 
@@ -388,10 +391,6 @@ El consumo de potencia se completa a partir del reporte generado por las herrami
 | Potencia dinámica | `[completar]` |
 | Potencia estática | `[completar]` |
 
-![Reporte de consumo de potencia](doc/img/reporte_potencia.png)
-
-**Figura 12.** Reporte de potencia generado por las herramientas de implementación.
-
 ## 14. Reporte de temporización y frecuencia máxima
 
 El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9K. Para validar este requisito se revisa el reporte de temporización generado durante el proceso de síntesis, colocación y ruteo. El criterio de aceptación es que la frecuencia máxima reportada sea mayor o igual a la frecuencia requerida de 27 MHz.
@@ -399,13 +398,11 @@ El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9
 | Parámetro | Valor |
 |---|---:|
 | Frecuencia requerida | `27 MHz` |
-| Frecuencia máxima reportada | `[completar] MHz` |
-| Slack | `[completar]` |
-| Cumplimiento | `[cumple / no cumple]` |
+| Frecuencia máxima reportada | `162.44 MHz` |
+| Slack | Positivo |
+| Cumplimiento | Cumple |
 
-![Reporte de temporización](doc/img/reporte_timing.png)
-
-**Figura 13.** Reporte de temporización usado para verificar el cumplimiento de la frecuencia mínima requerida.
+El reporte de temporización indica una frecuencia máxima de operación de 162.44 MHz para el reloj `display_inst.clk`, con resultado `PASS` para la frecuencia objetivo de 27 MHz. Por lo tanto, el diseño cumple con el requisito mínimo de operación establecido para la Tang Nano 9K.
 
 ## 15. Análisis de problemas encontrados y soluciones aplicadas
 
@@ -437,7 +434,7 @@ La implementación física del sistema conecta la FPGA Tang Nano 9K con el tecla
 
 ![Montaje físico del sistema](doc/img/montaje_fisico.jpeg)
 
-**Figura 14.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
+**Figura 11.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
 
 ## 17. Ejercicios experimentales
 
@@ -449,7 +446,7 @@ En este ejercicio se debe alambrar la conexión de dos contadores sincrónicos 7
 
 ![Montaje de contadores 74LS163](doc/img/ejercicio_contadores_montaje.png)
 
-**Figura 15.** Montaje experimental de los contadores sincrónicos 74LS163 en cascada.
+**Figura 12.** Montaje experimental de los contadores sincrónicos 74LS163 en cascada.
 
 | Elemento medido o analizado | Resultado |
 |---|---|
@@ -461,7 +458,7 @@ En este ejercicio se debe alambrar la conexión de dos contadores sincrónicos 7
 
 ![Captura del analizador lógico para contadores](doc/img/ejercicio_contadores_analizador.png)
 
-**Figura 16.** Captura del analizador lógico durante la prueba de los contadores sincrónicos.
+**Figura 13.** Captura del analizador lógico durante la prueba de los contadores sincrónicos.
 
 La salida `RCO` se analiza como señal de acarreo del contador menos significativo hacia el contador más significativo. La explicación final de su funcionamiento, junto con la diferencia entre las entradas `T` y `P` o `ENT` y `ENP`, se completa con base en la medición y en la hoja de datos del circuito integrado utilizado.
 
@@ -471,7 +468,7 @@ En este ejercicio se debe construir un cerrojo Set-Reset utilizando compuertas N
 
 ![Montaje del cerrojo SR](doc/img/ejercicio_sr_montaje.png)
 
-**Figura 17.** Montaje experimental del cerrojo SR construido con compuertas NAND.
+**Figura 14.** Montaje experimental del cerrojo SR construido con compuertas NAND.
 
 | CLK | S | R | Q | QN | Descripción |
 |---|---|---|---|---|---|
@@ -482,7 +479,7 @@ En este ejercicio se debe construir un cerrojo Set-Reset utilizando compuertas N
 
 ![Captura del analizador lógico para cerrojo SR](doc/img/ejercicio_sr_analizador.png)
 
-**Figura 18.** Captura del analizador lógico durante la prueba del cerrojo SR.
+**Figura 15.** Captura del analizador lógico durante la prueba del cerrojo SR.
 
 El análisis final debe explicar el funcionamiento del cerrojo, el efecto del reloj sobre las entradas `S` y `R`, y el comportamiento esperado cuando ambas entradas se mantienen activas al mismo tiempo.
 
