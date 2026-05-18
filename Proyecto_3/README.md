@@ -100,6 +100,26 @@ flowchart LR
 ```
 Fila de 4 bits construida a partir de varias celdas divider_cell conectadas en cascada, donde el acarreo se propaga entre celdas y se obtiene una resta completa del residuo parcial contra el divisor.
 
+Diagrama divider_stage
+```mermaid
+flowchart LR
+    RI["r_i de 4 bits"] --> ROW["divider_row"]
+    BI["b_i de 4 bits"] --> ROW
+    ACC["accept_i fijo en 1"] --> ROW
+
+    ROW --> DIFF["diff_o de 4 bits"]
+    ROW --> COUT["cout_o"]
+
+    RI --> MUX["MUX selector de residuo"]
+    DIFF --> MUX
+    COUT --> MUX
+
+    MUX --> RNEXT["r_next_o de 4 bits"]
+
+    COUT --> QBIT["q_bit_o"]
+```
+divider_stage representa una etapa de decisión del divisor. Internamente utiliza divider_row para intentar restar el divisor al residuo parcial, forzando accept_i en 1 para obtener el resultado de la resta. Luego, el acarreo final cout_o se utiliza como señal de decisión: si cout_o es 1, la resta fue válida y se acepta diff_o como nuevo residuo; si cout_o es 0, la resta no fue válida y se conserva el residuo anterior r_i. Esta misma señal se entrega como q_bit_o, correspondiente al bit del cociente generado por la etapa.
+
 ## Apendices:
 ### Apendice 1:
 texto, imágen, etc
