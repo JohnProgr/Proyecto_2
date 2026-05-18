@@ -39,6 +39,17 @@ Descripción y resultados de las pruebas hechas
 
 ## 5. Problemas encontrados durante el proyecto
 
+## Diagramas para informe
+```mermaid
+flowchart TD
+    A[Teclado hexadecimal] --> B[Subsistema de lectura]
+    B --> C[Conversión BCD a binario]
+    C --> D[Subsistema de división entera]
+    D --> E[Conversión binario a BCD]
+    E --> F[Selector cociente / residuo]
+    F --> G[Display 7 segmentos]
+```
+
 ## Apendices:
 ### Apendice 1:
 texto, imágen, etc
