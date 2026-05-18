@@ -1,0 +1,246 @@
+$date
+	Mon May 04 23:56:31 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module tb_bcd4_adder $end
+$var wire 4 ! r3 [3:0] $end
+$var wire 4 " r2 [3:0] $end
+$var wire 4 # r1 [3:0] $end
+$var wire 4 $ r0 [3:0] $end
+$var wire 1 % overflow $end
+$var reg 4 & a0 [3:0] $end
+$var reg 4 ' a1 [3:0] $end
+$var reg 4 ( a2 [3:0] $end
+$var reg 4 ) a3 [3:0] $end
+$var reg 4 * b0 [3:0] $end
+$var reg 4 + b1 [3:0] $end
+$var reg 4 , b2 [3:0] $end
+$var reg 4 - b3 [3:0] $end
+$scope module dut $end
+$var wire 4 . a0 [3:0] $end
+$var wire 4 / a1 [3:0] $end
+$var wire 4 0 a2 [3:0] $end
+$var wire 4 1 a3 [3:0] $end
+$var wire 4 2 b0 [3:0] $end
+$var wire 4 3 b1 [3:0] $end
+$var wire 4 4 b2 [3:0] $end
+$var wire 4 5 b3 [3:0] $end
+$var reg 1 6 c0 $end
+$var reg 1 7 c1 $end
+$var reg 1 8 c2 $end
+$var reg 1 9 c3 $end
+$var reg 1 % overflow $end
+$var reg 4 : r0 [3:0] $end
+$var reg 4 ; r1 [3:0] $end
+$var reg 4 < r2 [3:0] $end
+$var reg 4 = r3 [3:0] $end
+$scope function add_bcd_digit $end
+$upscope $end
+$upscope $end
+$scope task test_sum $end
+$var reg 4 > er0 [3:0] $end
+$var reg 4 ? er1 [3:0] $end
+$var reg 4 @ er2 [3:0] $end
+$var reg 4 A er3 [3:0] $end
+$var reg 4 B ta0 [3:0] $end
+$var reg 4 C ta1 [3:0] $end
+$var reg 4 D ta2 [3:0] $end
+$var reg 4 E ta3 [3:0] $end
+$var reg 4 F tb0 [3:0] $end
+$var reg 4 G tb1 [3:0] $end
+$var reg 4 H tb2 [3:0] $end
+$var reg 4 I tb3 [3:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b0 I
+b100 H
+b101 G
+b110 F
+b1 E
+b10 D
+b11 C
+b100 B
+b1 A
+b110 @
+b1001 ?
+b0 >
+b1 =
+b110 <
+b1001 ;
+b0 :
+09
+08
+07
+16
+b0 5
+b100 4
+b101 3
+b110 2
+b1 1
+b10 0
+b11 /
+b100 .
+b0 -
+b100 ,
+b101 +
+b110 *
+b1 )
+b10 (
+b11 '
+b100 &
+0%
+b0 $
+b1001 #
+b110 "
+b1 !
+$end
+#10000
+18
+b1001 "
+b1001 <
+17
+b1000 $
+b1000 :
+b1001 *
+b1001 2
+b1001 +
+b1001 3
+b1001 ,
+b1001 4
+b1001 &
+b1001 .
+b1001 '
+b1001 /
+b1001 (
+b1001 0
+b0 )
+b0 1
+b1000 >
+b1001 @
+b1001 F
+b1001 G
+b1001 H
+b1001 B
+b1001 C
+b1001 D
+b0 E
+#20000
+b0 !
+b0 =
+08
+b0 "
+b0 <
+07
+b0 #
+b0 ;
+06
+b0 $
+b0 :
+b0 *
+b0 2
+b0 +
+b0 3
+b0 ,
+b0 4
+b0 &
+b0 .
+b0 '
+b0 /
+b0 (
+b0 0
+b0 >
+b0 ?
+b0 @
+b0 A
+b0 F
+b0 G
+b0 H
+b0 B
+b0 C
+b0 D
+#30000
+b11 !
+b11 =
+b11 "
+b11 <
+b11 #
+b11 ;
+b11 $
+b11 :
+b10 *
+b10 2
+b10 +
+b10 3
+b10 ,
+b10 4
+b10 -
+b10 5
+b1 &
+b1 .
+b1 '
+b1 /
+b1 (
+b1 0
+b1 )
+b1 1
+b11 >
+b11 ?
+b11 @
+b11 A
+b10 F
+b10 G
+b10 H
+b10 I
+b1 B
+b1 C
+b1 D
+b1 E
+#40000
+b1001 !
+b1001 =
+b0 "
+b0 <
+b0 #
+b0 ;
+b0 $
+b0 :
+b0 *
+b0 2
+b0 +
+b0 3
+b0 ,
+b0 4
+b100 -
+b100 5
+b0 &
+b0 .
+b0 '
+b0 /
+b0 (
+b0 0
+b101 )
+b101 1
+b0 >
+b0 ?
+b0 @
+b1001 A
+b0 F
+b0 G
+b0 H
+b100 I
+b0 B
+b0 C
+b0 D
+b101 E
+#50000
