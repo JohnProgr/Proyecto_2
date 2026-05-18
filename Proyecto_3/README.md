@@ -120,7 +120,7 @@ flowchart LR
 ```
 divider_stage representa una etapa de decisión del divisor. Internamente utiliza divider_row para intentar restar el divisor al residuo parcial, forzando accept_i en 1 para obtener el resultado de la resta. Luego, el acarreo final cout_o se utiliza como señal de decisión: si cout_o es 1, la resta fue válida y se acepta diff_o como nuevo residuo; si cout_o es 0, la resta no fue válida y se conserva el residuo anterior r_i. Esta misma señal se entrega como q_bit_o, correspondiente al bit del cociente generado por la etapa.
 
-Diagrama divider_comb 
+Diagrama divisor completo
 ```mermaid
 flowchart TD
     A["dividend_i de 6 bits"] --> S5["Etapa bit 5"]
@@ -148,6 +148,18 @@ flowchart TD
     S0 --> Q0["quotient bit 0"]
     S0 --> R["remainder_o"]
 ```
+
+Diagrama divisor_comb
+```mermaid
+flowchart LR
+    A["dividend_i de 6 bits"] --> B["Cadena de 6 divider_stage"]
+    D["divisor_i de 4 bits"] --> E["divisor_ext de 5 bits"]
+    E --> B
+    B --> Q["quotient_o de 6 bits"]
+    B --> R["remainder_o de 4 bits"]
+    D --> Z["div_zero_o"]
+```
+El módulo divider_comb implementa un divisor combinacional sin signo para un dividendo de 6 bits y un divisor de 4 bits. Internamente utiliza seis módulos divider_stage conectados en secuencia, uno por cada bit del dividendo, desde el bit más significativo hasta el menos significativo. En cada etapa se genera un bit del cociente y se actualiza el residuo parcial. El divisor se extiende a 5 bits para permitir la operación de resta con el residuo desplazado. Finalmente, los bits q5 a q0 se agrupan para formar quotient_o, el residuo final se entrega como remainder_o y se incluye una señal div_zero_o para detectar división entre cero.
 
 ## Apendices:
 ### Apendice 1:
