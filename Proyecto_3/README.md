@@ -72,35 +72,31 @@ Celda básica de 1 bit que realiza una resta por complemento a dos y selecciona 
 Diaframa divider_row
 ```mermaid
 flowchart LR
-    C0[carry[0] = 1] --> C1[divider_cell bit 0]
-    C1 -->|carry[1]| C2[divider_cell bit 1]
-    C2 -->|carry[2]| C3[divider_cell bit 2]
-    C3 -->|carry[3]| C4[divider_cell bit 3]
-    C4 -->|carry[4]| CO[cout_o]
+    START["carry inicial = 1"] --> C0["Celda bit 0"]
+    C0 -->|"carry"| C1["Celda bit 1"]
+    C1 -->|"carry"| C2["Celda bit 2"]
+    C2 -->|"carry"| C3["Celda bit 3"]
+    C3 --> COUT["cout_o"]
 
-    R0[r_i[0]] --> C1
-    B0[b_i[0]] --> C1
-    A0[accept_i] --> C1
-    C1 --> D0[diff_o[0]]
-    C1 --> N0[r_next_o[0]]
+    RI["r_i de 4 bits"] --> C0
+    RI --> C1
+    RI --> C2
+    RI --> C3
 
-    R1[r_i[1]] --> C2
-    B1[b_i[1]] --> C2
-    A1[accept_i] --> C2
-    C2 --> D1[diff_o[1]]
-    C2 --> N1[r_next_o[1]]
+    BI["b_i de 4 bits"] --> C0
+    BI --> C1
+    BI --> C2
+    BI --> C3
 
-    R2[r_i[2]] --> C3
-    B2[b_i[2]] --> C3
-    A2[accept_i] --> C3
-    C3 --> D2[diff_o[2]]
-    C3 --> N2[r_next_o[2]]
+    ACC["accept_i común"] --> C0
+    ACC --> C1
+    ACC --> C2
+    ACC --> C3
 
-    R3[r_i[3]] --> C4
-    B3[b_i[3]] --> C4
-    A3[accept_i] --> C4
-    C4 --> D3[diff_o[3]]
-    C4 --> N3[r_next_o[3]]
+    C0 --> D0["diff_o bit 0 / r_next_o bit 0"]
+    C1 --> D1["diff_o bit 1 / r_next_o bit 1"]
+    C2 --> D2["diff_o bit 2 / r_next_o bit 2"]
+    C3 --> D3["diff_o bit 3 / r_next_o bit 3"]
 ```
 Fila de 4 bits construida a partir de varias celdas divider_cell conectadas en cascada, donde el acarreo se propaga entre celdas y se obtiene una resta completa del residuo parcial contra el divisor.
 
