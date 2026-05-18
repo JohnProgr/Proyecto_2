@@ -40,6 +40,8 @@ Descripción y resultados de las pruebas hechas
 ## 5. Problemas encontrados durante el proyecto
 
 ## Diagramas para informe
+
+Diagrama general
 ```mermaid
 flowchart TD
     A[Teclado hexadecimal] --> B[Subsistema de lectura]
