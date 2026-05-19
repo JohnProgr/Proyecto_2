@@ -136,14 +136,7 @@ module divider_comb (
         .cout_o   (cout_0)
     );
 
-    always_comb begin
-        if (div_zero_o) begin
-            quotient_o  = 6'd0;
-            remainder_o = 4'd0;
-        end else begin
-            quotient_o  = {q5, q4, q3, q2, q1, q0};
-            remainder_o = rem_next_0[3:0];
-        end
-    end
+    assign quotient_o  = (div_zero_o) ? 6'd0 : {q5, q4, q3, q2, q1, q0};
+    assign remainder_o = (div_zero_o) ? 4'd0 : rem_next_0[3:0];
 
 endmodule

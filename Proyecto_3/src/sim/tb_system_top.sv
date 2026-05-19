@@ -8,8 +8,6 @@ module tb_system_top;
     logic [3:0] filas;
     logic [3:0] columnas;
 
-    logic select_i;
-
     logic [6:0] seven;
     logic [3:0] anodo;
 
@@ -29,7 +27,6 @@ module tb_system_top;
         .rst_n      (rst_n),
         .filas      (filas),
         .columnas   (columnas),
-        .select_i   (select_i),
         .seven      (seven),
         .anodo      (anodo),
         .done_o     (done_o),
@@ -110,7 +107,6 @@ module tb_system_top;
 
         clk            = 1'b0;
         rst_n          = 1'b0;
-        select_i       = 1'b0; // 0 = mostrar cociente
         key_is_pressed = 1'b0;
         pressed_fila   = 4'b1111;
         pressed_col    = 4'hF;
@@ -143,9 +139,15 @@ module tb_system_top;
                 dut.quotient, dut.remainder, div_zero_o);
         end
 
-        // Cambiar a mostrar residuo.
-        select_i = 1'b1;
-        #2000;
+        // Cambiar a mostrar residuo usando tecla D
+        press_key(4'hD);
+        repeat (50) @(negedge clk);
+
+        if (dut.select_reg !== 1'b1) begin
+            $display("ERROR: tecla D no cambio a modo residuo");
+        end else begin
+            $display("OK: tecla D cambio a modo residuo");
+        end
 
         $display("Simulacion de system_top con teclado finalizada.");
         $finish;

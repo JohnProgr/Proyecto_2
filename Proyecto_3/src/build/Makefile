@@ -15,7 +15,7 @@ SOURCES := $(wildcard ../design/*.v ../design/*.sv)
 TESTBENCH = ../sim/tb_system_top.sv
 
 # Constraints para el proyecto
-CONSTRAINTS = ../constr/CONSTRAINTS.cst
+CONSTRAINTS = ../constr/proyecto3.cst
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
 TOP_DESIGN = system_top

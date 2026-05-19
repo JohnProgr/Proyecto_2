@@ -11,17 +11,13 @@ module system_top #(
     output logic [3:0] filas,
     input  logic [3:0] columnas,
 
-    // Selector: 0 = cociente, 1 = residuo
-    input  logic       select_i,
-
     // Display 7 segmentos
     output logic [6:0] seven,
-    output logic [3:0] anodo,
-
-    // Estado
-    output logic       done_o,
-    output logic       div_zero_o
+    output logic [3:0] anodo
 );
+
+    logic done_signal;
+    logic div_zero_signal;
 
     logic [3:0] key_value;
     logic       key_valid;
@@ -32,6 +28,8 @@ module system_top #(
 
     logic [5:0] quotient;
     logic [3:0] remainder;
+
+    logic       select_reg;
 
     keypad_reader #(
         .SCAN_DELAY(KEYPAD_SCAN_DELAY),
@@ -44,6 +42,19 @@ module system_top #(
         .key_value (key_value),
         .key_valid (key_valid)
     );
+
+    // Tecla D cambia entre cociente y residuo.
+    // select_reg = 0 -> cociente
+    // select_reg = 1 -> residuo
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            select_reg <= 1'b0;
+        end else begin
+            if (key_valid && key_value == 4'hD) begin
+                select_reg <= ~select_reg;
+            end
+        end
+    end
 
     input_controller input_inst (
         .clk         (clk),
@@ -63,8 +74,8 @@ module system_top #(
         .divisor_i   (divisor),
         .quotient_o  (quotient),
         .remainder_o (remainder),
-        .div_zero_o  (div_zero_o),
-        .done_o      (done_o)
+        .div_zero_o  (div_zero_signal),
+        .done_o      (done_signal)
     );
 
     display_result_controller display_inst (
@@ -72,7 +83,7 @@ module system_top #(
         .rst_n       (rst_n),
         .quotient_i  (quotient),
         .remainder_i (remainder),
-        .select_i    (select_i),
+        .select_i    (select_reg),
         .seven       (seven),
         .anodo       (anodo)
     );
