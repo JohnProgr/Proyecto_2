@@ -1,4 +1,4 @@
-# DDivisión de enteros
+# División de enteros
 
 ## 1. Abreviaturas y definiciones
 
