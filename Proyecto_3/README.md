@@ -400,6 +400,70 @@ flowchart TD
 
 **Figura X.** Diagrama de bloques del subsistema de división entera.
 
+## 10. Subsistema de despliegue en 7 segmentos
+
+El subsistema de despliegue es el encargado de presentar al usuario la información generada por el sistema de división. Este bloque recibe el cociente y el residuo calculados por el subsistema de división y permite visualizar cualquiera de los dos resultados en cuatro displays de siete segmentos.
+
+El despliegue está formado principalmente por los módulos `result_selector`, `bin_to_bcd`, `display_result_controller`, `display_mux4` y `display_hex_decoder`.
+
+El módulo `result_selector` permite seleccionar cuál dato será mostrado en pantalla. Dependiendo de la señal de selección, el sistema puede desplegar el cociente o el residuo obtenido durante la operación de división. Esta funcionalidad permite reutilizar el mismo conjunto de displays para visualizar ambos resultados.
+
+Una vez seleccionado el valor correspondiente, el módulo `bin_to_bcd` convierte el número binario a representación BCD. Esta conversión es necesaria debido a que los resultados internos de la división se almacenan en formato binario, mientras que los displays requieren dígitos decimales independientes para su correcta visualización.
+
+Posteriormente, el módulo `display_result_controller` organiza los dígitos BCD obtenidos y los envía al sistema de multiplexado. El módulo `display_mux4` recibe cuatro dígitos de 4 bits (`d3`, `d2`, `d1` y `d0`) y selecciona cuál de ellos será mostrado en cada instante. Para ello utiliza un contador interno de refresco que determina cuál display debe activarse.
+
+Finalmente, el módulo `display_hex_decoder` convierte cada dígito de 4 bits en el patrón correspondiente para los siete segmentos. Aunque este decodificador puede representar valores hexadecimales desde 0 hasta F, durante la operación normal del sistema se utilizan principalmente valores decimales de 0 a 9.
+
+### 10.1 Multiplexado de los displays
+
+La multiplexación permite controlar cuatro displays utilizando un único conjunto de líneas de segmentos. El sistema activa únicamente un display a la vez mediante las señales de ánodo y cambia rápidamente entre ellos, generando la percepción visual de que todos permanecen encendidos simultáneamente.
+
+La selección de ánodos se realiza mediante lógica activa en bajo, según se muestra en la Tabla 2.
+
+| Selector | Dígito mostrado | Ánodo activo |
+| -------- | --------------- | ------------ |
+| 00       | d3              | 1110         |
+| 01       | d2              | 1101         |
+| 10       | d1              | 1011         |
+| 11       | d0              | 0111         |
+
+### 10.2 Conversión binario a BCD
+
+Los resultados producidos por el divisor se encuentran originalmente en formato binario. Para permitir una representación decimal comprensible para el usuario, el módulo `bin_to_bcd` realiza la conversión hacia cuatro dígitos BCD.
+
+Esta conversión evita que el usuario deba interpretar directamente el resultado binario y permite utilizar el mismo sistema de despliegue decimal empleado en proyectos anteriores.
+
+### 10.3 Selección entre cociente y residuo
+
+Una vez finalizada la operación de división, el sistema permite alternar entre la visualización del cociente y el residuo. Esta funcionalidad es implementada por el módulo `result_selector`, el cual recibe ambos resultados y entrega únicamente el valor seleccionado hacia el bloque de conversión y despliegue.
+
+Gracias a este mecanismo, es posible presentar toda la información requerida utilizando únicamente cuatro displays de siete segmentos.
+
+### 10.4 Diagrama del subsistema de despliegue
+
+```mermaid
+flowchart LR
+    Q[Cociente]
+    R[Residuo]
+
+    Q --> SEL[result_selector]
+    R --> SEL
+
+    SEL --> BCD[bin_to_bcd]
+
+    BCD --> CTRL[display_result_controller]
+
+    CTRL --> MUX[display_mux4]
+    MUX --> DEC[display_hex_decoder]
+
+    DEC --> SEG[seg 6:0]
+    MUX --> AN[anodo 3:0]
+```
+
+**Figura 5.** Diagrama de bloques del subsistema de despliegue multiplexado.
+
+El subsistema de despliegue constituye la interfaz visual del proyecto, permitiendo al usuario observar de forma clara y directa los resultados generados por la unidad de división sin necesidad de interpretar valores binarios internos.
+
 
 ## 3. Desarrollo
 
