@@ -28,7 +28,15 @@
 
 
 ## 2. Referencias
-[0] David Harris y Sarah Harris. *Digital Design and Computer Architecture. RISC-V Edition.* Morgan Kaufmann, 2022. ISBN: 978-0-12-820064-3
+[1] Pong P. Chu. FPGA Prototyping by SystemVerilog Examples. Xilinx MicroBlaze MCS SoC Edition. Wiley, 2018.
+
+[2] Andrew House. Hex Keypad Explanation. Noviembre de 2009. Disponible en: https://www-ug.eecg.toronto.edu/msl/nios_devices/datasheets/hex_expl.pdf
+
+[3] David Medina. Video tutorial para principiantes. Flujo abierto para TangNano 9K. Julio de 2024. Disponible en: https://www.youtube.com/watch?v=AKO-SaOM7BA
+
+[4] David Medina. Wiki tutorial sobre el uso de la TangNano 9K y el flujo abierto de herramientas. Mayo de 2024. Disponible en: https://github.com/DJosueMM/open_source_fpga_environment/wiki
+
+[5] William James Dally y R. Curtis Harting. Digital Design: A Systems Approach. Cambridge University Press, 2012.
 
 ## 3. Introducción 
 El diseño de sistemas digitales modernos requiere la implementación eficiente de algoritmos mediante circuitos lógicos secuenciales y combinacionales. A diferencia del software, donde las operaciones se ejecutan de forma secuencial por un procesador, en los sistemas digitales es necesario diseñar explícitamente la ruta de datos y la lógica de control que permitan realizar cada operación de manera correcta y sincronizada con una señal de reloj.
