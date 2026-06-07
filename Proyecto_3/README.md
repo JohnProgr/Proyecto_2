@@ -506,7 +506,7 @@ La estructura modular utilizada permite verificar cada subsistema de manera inde
 ## 12. Testbench y simulaciones
 La verificación funcional del proyecto se realizó mediante testbenches individuales para los principales módulos del sistema. Los archivos de simulación se encuentran en la carpeta src/sim.
 
-12.1 Testbench del lector de teclado
+### 12.1 Testbench del lector de teclado
 
 El archivo tb_keypad_reader.sv se utiliza para verificar el funcionamiento del módulo keypad_reader. Con el fin de acelerar la simulación, los parámetros SCAN_DELAY y RELEASE_DELAY fueron reducidos respecto a sus valores de implementación física, permitiendo observar varias secuencias de barrido y detección de teclas en un intervalo de tiempo corto.
 
@@ -522,6 +522,42 @@ Simulación del lector de teclado
 
 
 Figura 7. Simulación funcional del módulo keypad_reader. Se observa el barrido de filas, la sincronización de las señales provenientes del teclado, la detección de pulsaciones y la generación de los códigos key_value junto con el pulso de validación key_valid.
+
+### 12.2 Testbench del divisor sincrónico
+
+El archivo `tb_divider_core.sv` se utilizó para verificar el funcionamiento del módulo `divider_core`, encargado de coordinar la operación de división mediante una interfaz de control basada en las señales `valid_i` y `done_o`.
+
+Durante la simulación se aplicaron diferentes combinaciones de dividendos y divisores con el objetivo de validar el cálculo del cociente y el residuo. La Tabla 3 resume algunos de los casos evaluados.
+
+| Dividendo | Divisor | Cociente esperado | Residuo esperado |
+| --------- | ------- | ----------------- | ---------------- |
+| 10        | 2       | 5                 | 0                |
+| 15        | 4       | 3                 | 3                |
+| 63        | 15      | 4                 | 3                |
+| 7         | 3       | 2                 | 1                |
+| 5         | 8       | 0                 | 5                |
+
+La Figura 8 muestra la simulación funcional del módulo. Se observa que cada vez que la señal `valid_i` se activa, el divisor captura los operandos de entrada y genera el resultado correspondiente. Una vez finalizado el cálculo, la señal `done_o` indica que el cociente y el residuo son válidos y pueden ser utilizados por los módulos posteriores del sistema.
+
+Los resultados obtenidos coinciden con los valores esperados para todos los casos de prueba considerados, verificando el correcto funcionamiento de la unidad de división.
+
+**Simulación del divisor sincrónico**
+
+<img width="1183" height="144" alt="image" src="https://github.com/user-attachments/assets/aed34474-6c18-41f0-af5b-6d894434cc53" />
+
+
+**Figura 8.** Simulación funcional del módulo `divider_core`. Se muestran las señales de control `valid_i` y `done_o`, así como los valores de dividendo, divisor, cociente y residuo generados por la unidad de división.
+
+
+
+
+
+
+
+
+
+
+
 
 **Diagrama general**
 ```mermaid
