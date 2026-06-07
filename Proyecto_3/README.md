@@ -220,7 +220,7 @@ flowchart LR
     LOCK --> VALID[key_valid]
 ```
 
-**Figura 1.** Diagrama de bloques del subsistema de lectura del teclado hexadecimal.
+**Figura 2.** Diagrama de bloques del subsistema de lectura del teclado hexadecimal.
 
 El subsistema de lectura constituye la interfaz principal entre el usuario y la FPGA. Su función es transformar las pulsaciones realizadas sobre el teclado en códigos digitales sincronizados y libres de rebotes, permitiendo que los módulos posteriores procesen la información de manera confiable.
 
@@ -261,7 +261,7 @@ El sistema permite reiniciar la captura de datos mediante la tecla `*`. Cuando e
 
 ### 8.6 Diagrama de estados
 
-La Figura 2 muestra el diagrama de estados utilizado por el subsistema de control de entrada.
+La Figura 3 muestra el diagrama de estados utilizado por el subsistema de control de entrada.
 
 ```mermaid
 stateDiagram-v2
@@ -281,7 +281,7 @@ stateDiagram-v2
     RESULT_READY --> INPUT_DIVIDEND : tecla *
 ```
 
-**Figura 2.** Diagrama de estados del subsistema de control de entrada.
+**Figura 3.** Diagrama de estados del subsistema de control de entrada.
 
 ### 8.7 Diagrama del subsistema de control
 
@@ -308,7 +308,7 @@ flowchart LR
     DIVIDER --> R[Residuo]
 ```
 
-**Figura 3.** Diagrama de bloques del subsistema de control y captura de datos.
+**Figura 4.** Diagrama de bloques del subsistema de control y captura de datos.
 
 ## 9. Subsistema de división entera
 
@@ -406,7 +406,7 @@ flowchart TD
     CORE --> D[done_o]
 ```
 
-**Figura X.** Diagrama de bloques del subsistema de división entera.
+**Figura 5.** Diagrama de bloques del subsistema de división entera.
 
 ## 10. Subsistema de despliegue en 7 segmentos
 
@@ -468,7 +468,7 @@ flowchart LR
     MUX --> AN[anodo 3:0]
 ```
 
-**Figura 5.** Diagrama de bloques del subsistema de despliegue multiplexado.
+**Figura 6.** Diagrama de bloques del subsistema de despliegue multiplexado.
 
 El subsistema de despliegue constituye la interfaz visual del proyecto, permitiendo al usuario observar de forma clara y directa los resultados generados por la unidad de división sin necesidad de interpretar valores binarios internos.
 
@@ -482,7 +482,7 @@ El subsistema de división recibe el dividendo y el divisor, ejecuta el algoritm
 
 El dato seleccionado se convierte posteriormente desde formato binario a BCD mediante el módulo `bin_to_bcd`. Finalmente, el subsistema de despliegue recibe los dígitos BCD, realiza el multiplexado de los displays y genera las señales necesarias para controlar los segmentos y ánodos de los cuatro displays de siete segmentos.
 
-La Figura 6 muestra la interconexión general de todos los subsistemas que conforman el diseño.
+La Figura 7 muestra la interconexión general de todos los subsistemas que conforman el diseño.
 
 ```mermaid
 flowchart LR
@@ -507,7 +507,7 @@ flowchart LR
     DEC --> SEG[Displays de 7 segmentos]
 ```
 
-**Figura 6.** Diagrama general de interconexión del sistema de división entera.
+**Figura 7.** Diagrama general de interconexión del sistema de división entera.
 
 La estructura modular utilizada permite verificar cada subsistema de manera independiente antes de integrarlos dentro del sistema completo. Además, la separación entre captura de datos, procesamiento y visualización facilita el mantenimiento del diseño y reduce la complejidad de depuración durante las etapas de simulación e implementación física.
 
@@ -529,7 +529,7 @@ Simulación del lector de teclado
 <img width="1305" height="295" alt="image" src="https://github.com/user-attachments/assets/dbf4479b-5bda-4a83-b77a-edc57815647f" />
 
 
-Figura 7. Simulación funcional del módulo keypad_reader. Se observa el barrido de filas, la sincronización de las señales provenientes del teclado, la detección de pulsaciones y la generación de los códigos key_value junto con el pulso de validación key_valid.
+Figura 8. Simulación funcional del módulo keypad_reader. Se observa el barrido de filas, la sincronización de las señales provenientes del teclado, la detección de pulsaciones y la generación de los códigos key_value junto con el pulso de validación key_valid.
 
 ### 12.2 Testbench del divisor sincrónico
 
@@ -554,7 +554,7 @@ Los resultados obtenidos coinciden con los valores esperados para todos los caso
 <img width="1183" height="144" alt="image" src="https://github.com/user-attachments/assets/aed34474-6c18-41f0-af5b-6d894434cc53" />
 
 
-**Figura 8.** Simulación funcional del módulo `divider_core`. Se muestran las señales de control `valid_i` y `done_o`, así como los valores de dividendo, divisor, cociente y residuo generados por la unidad de división.
+**Figura 9.** Simulación funcional del módulo `divider_core`. Se muestran las señales de control `valid_i` y `done_o`, así como los valores de dividendo, divisor, cociente y residuo generados por la unidad de división.
 
 ### 12.3 Testbench del sistema integrado
 
@@ -579,7 +579,7 @@ Los resultados obtenidos coinciden con los valores teóricos esperados para cada
 <img width="1329" height="235" alt="image" src="https://github.com/user-attachments/assets/c48d06f3-f547-4e33-95bc-9c34bccc421d" />
 
 
-**Figura 9.** Simulación funcional del módulo `system_top_direct`. Se observa la ejecución de distintas operaciones de división, la generación de los valores de cociente y residuo, y el funcionamiento del subsistema de visualización mediante las señales de segmentos y selección de displays.
+**Figura 10.** Simulación funcional del módulo `system_top_direct`. Se observa la ejecución de distintas operaciones de división, la generación de los valores de cociente y residuo, y el funcionamiento del subsistema de visualización mediante las señales de segmentos y selección de displays.
 
 ## 13. Consumo de recursos
 
