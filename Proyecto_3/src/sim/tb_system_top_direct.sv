@@ -70,8 +70,8 @@ module tb_system_top_direct;
     endtask
 
     initial begin
-        $dumpfile("tb_system_top.vcd");
-        $dumpvars(0, tb_system_top);
+        $dumpfile("tb_system_top_direct.vcd");
+        $dumpvars(0, tb_system_top_direct);
 
         clk        = 1'b0;
         rst_n      = 1'b0;

@@ -12,17 +12,17 @@ PROYECT = system_top
 SOURCES := $(wildcard ../design/*.v ../design/*.sv)
 
 #Fuente de simulacion
-TESTBENCH = ../sim/tb_system_top.sv
+TESTBENCH = ../sim/tb_system_top_direct.sv
 
 # Constraints para el proyecto
 CONSTRAINTS = ../constr/proyecto3.cst
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
 TOP_DESIGN = system_top
-TOP_TB     = tb_system_top
+TOP_TB     = tb_system_top_direct
 
 #nombre del vcd que va a generar el tb
-VCD_FILE = tb_system_top.vcd
+VCD_FILE = tb_system_top_direct.vcd
 
 
 all: synth pnr bitstream load
