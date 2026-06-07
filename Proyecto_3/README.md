@@ -1,4 +1,4 @@
-# Divisor con FPGA 
+# DDivisión de enteros
 
 ## 1. Abreviaturas y definiciones
 
