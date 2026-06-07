@@ -548,6 +548,30 @@ Los resultados obtenidos coinciden con los valores esperados para todos los caso
 
 **Figura 8.** Simulación funcional del módulo `divider_core`. Se muestran las señales de control `valid_i` y `done_o`, así como los valores de dividendo, divisor, cociente y residuo generados por la unidad de división.
 
+### 12.3 Testbench del sistema integrado
+
+El archivo `tb_system_top_direct.sv` se utilizó para verificar el funcionamiento del sistema integrado. Este testbench permite evaluar conjuntamente los bloques de división, selección de resultados y despliegue, validando la interacción entre los diferentes subsistemas que conforman el diseño.
+
+Durante la simulación se aplicaron diferentes combinaciones de dividendos y divisores mediante las señales de entrada `dividend_i` y `divisor_i`. Cada operación se inició mediante la activación de la señal `valid_i`, mientras que la finalización del proceso fue indicada por la señal `done_o`. Posteriormente, se verificó que los valores generados para el cociente y el residuo coincidieran con los resultados esperados.
+
+La Tabla 4 resume algunos de los casos evaluados durante la simulación.
+
+| Dividendo | Divisor | Cociente esperado | Residuo esperado  |
+| --------- | ------- | ----------------- | ----------------- |
+| 15        | 4       | 3                 | 3                 |
+| 63        | 15      | 4                 | 3                 |
+| 12        | 0       | División inválida | División inválida |
+
+La Figura 9 muestra la simulación funcional del sistema integrado. Se observa la correcta captura de los operandos de entrada, la generación de los valores de cociente y residuo, así como el funcionamiento del subsistema de visualización mediante las señales `anodo` y `seven`. También se verifica el correcto funcionamiento de la señal `select_i`, utilizada para alternar entre la visualización del cociente y del residuo.
+
+Los resultados obtenidos coinciden con los valores teóricos esperados para cada una de las operaciones realizadas. Esto confirma la correcta integración entre el subsistema de división, el bloque de selección de resultados, el conversor binario a BCD y el sistema de despliegue en siete segmentos.
+
+**Simulación del sistema integrado**
+
+<img width="1329" height="235" alt="image" src="https://github.com/user-attachments/assets/c48d06f3-f547-4e33-95bc-9c34bccc421d" />
+
+
+**Figura 9.** Simulación funcional del módulo `system_top_direct`. Se observa la ejecución de distintas operaciones de división, la generación de los valores de cociente y residuo, y el funcionamiento del subsistema de visualización mediante las señales de segmentos y selección de displays.
 
 
 
