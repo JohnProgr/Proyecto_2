@@ -39,6 +39,37 @@ La unidad de división se basa en el algoritmo iterativo de división presentado
 
 El desarrollo del proyecto permite aplicar conceptos fundamentales de diseño lógico, tales como máquinas de estados finitos (FSM), rutas de datos, diseño modular, verificación mediante simulación y análisis de temporización. Asimismo, proporciona experiencia práctica en la implementación de algoritmos aritméticos sobre hardware reconfigurable, considerando tanto aspectos funcionales como restricciones de rendimiento y utilización de recursos dentro de la FPGA.
 
+## 4. Definición del problema y objetivos
+
+### 4.1 Definición del problema
+
+La implementación de operaciones aritméticas en hardware representa un desafío importante dentro del diseño de sistemas digitales, ya que requiere transformar algoritmos matemáticos en estructuras lógicas capaces de operar de forma sincronizada y eficiente. Entre estas operaciones, la división entera es particularmente relevante debido a que involucra múltiples etapas de cálculo y control, a diferencia de operaciones más simples como la suma o la resta.
+
+El problema planteado en este proyecto consiste en diseñar e implementar una unidad de división entera sin signo capaz de recibir un dividendo decimal representable con un máximo de 6 bits y un divisor decimal representable con un máximo de 4 bits. El sistema debe calcular el cociente y el residuo de la operación utilizando el algoritmo de división estudiado en el curso, garantizando además una correcta interacción entre los diferentes subsistemas encargados de la captura de datos, el procesamiento y el despliegue de resultados.
+
+La solución debe cumplir con los principios de diseño digital sincrónico, empleando registros, señales de control y una interfaz de comunicación basada en las señales *valid* y *done* para coordinar el flujo de datos entre módulos. Asimismo, el sistema debe ser implementado y verificado en una FPGA Tang Nano 9K utilizando SystemVerilog.
+
+### 4.2 Objetivo general
+
+Diseñar e implementar una unidad de división entera sin signo en una FPGA Tang Nano 9K, capaz de calcular el cociente y el residuo de una operación de división mediante el uso de SystemVerilog y técnicas de diseño digital sincrónico.
+
+### 4.3 Objetivos específicos
+
+* Implementar el algoritmo iterativo de división entera estudiado en el curso para obtener el cociente y el residuo de una operación aritmética.
+
+* Diseñar una ruta de datos que permita realizar las operaciones de resta, desplazamiento y almacenamiento requeridas por el algoritmo de división.
+
+* Implementar la lógica de control necesaria para coordinar el funcionamiento de los diferentes subsistemas mediante señales de control y sincronización.
+
+* Integrar los módulos de lectura de datos, conversión numérica, división y despliegue dentro de un sistema digital completo.
+
+* Verificar el correcto funcionamiento de cada módulo y del sistema integrado mediante testbenches y simulaciones funcionales.
+
+* Analizar el consumo de recursos y el desempeño temporal del diseño implementado en la FPGA.
+
+* Desplegar el cociente y el residuo obtenidos en displays de siete segmentos mediante los módulos de conversión y visualización desarrollados.
+
+
 ## 3. Desarrollo
 
 ### 3.0 Descripción general del sistema
