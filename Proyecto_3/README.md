@@ -464,41 +464,45 @@ flowchart LR
 
 El subsistema de despliegue constituye la interfaz visual del proyecto, permitiendo al usuario observar de forma clara y directa los resultados generados por la unidad de división sin necesidad de interpretar valores binarios internos.
 
+## 11. Interconexión general del sistema
 
-## 3. Desarrollo
+El sistema completo se organiza como una ruta de datos controlada por el módulo `input_controller`. El flujo de operación inicia cuando el usuario ingresa información mediante el teclado hexadecimal. El módulo `keypad_reader` detecta las pulsaciones, realiza el barrido de filas y genera un código hexadecimal válido junto con una señal de validación.
 
-### 3.0 Descripción general del sistema
+Posteriormente, el módulo `input_controller` interpreta las teclas ingresadas y construye los valores correspondientes al dividendo y al divisor. Una vez que ambos operandos han sido capturados, este bloque genera la señal `valid`, que inicia el proceso de división dentro del módulo `divider_core`.
 
-### 3.1 Módulo 1
-#### 1. Encabezado del módulo
-```SystemVerilog
-module mi_modulo(
-    input logic     entrada_i,      
-    output logic    salida_i 
-    );
+El subsistema de división recibe el dividendo y el divisor, ejecuta el algoritmo de división entera y produce como resultado el cociente, el residuo y la señal `done`, la cual indica que la operación ha finalizado correctamente. Los resultados generados son enviados al módulo `result_selector`, encargado de seleccionar cuál de los dos valores será mostrado al usuario.
+
+El dato seleccionado se convierte posteriormente desde formato binario a BCD mediante el módulo `bin_to_bcd`. Finalmente, el subsistema de despliegue recibe los dígitos BCD, realiza el multiplexado de los displays y genera las señales necesarias para controlar los segmentos y ánodos de los cuatro displays de siete segmentos.
+
+La Figura 6 muestra la interconexión general de todos los subsistemas que conforman el diseño.
+
+```mermaid
+flowchart LR
+    K[Teclado hexadecimal]
+
+    K --> KR[keypad_reader]
+
+    KR -->|key_value, key_valid| IC[input_controller]
+
+    IC -->|dividend, divisor, valid| DIV[divider_core]
+
+    DIV -->|quotient, remainder, done| SEL[result_selector]
+
+    SEL --> BCD[bin_to_bcd]
+
+    BCD --> DISP[display_result_controller]
+
+    DISP --> MUX[display_mux4]
+
+    MUX --> DEC[display_hex_decoder]
+
+    DEC --> SEG[Displays de 7 segmentos]
 ```
-#### 2. Parámetros
-- Lista de parámetros
 
-#### 3. Entradas y salidas:
-- `entrada_i`: descripción de la entrada
-- `salida_o`: descripción de la salida
+**Figura 6.** Diagrama general de interconexión del sistema de división entera.
 
-#### 4. Criterios de diseño
-Diagramas, texto explicativo...
+La estructura modular utilizada permite verificar cada subsistema de manera independiente antes de integrarlos dentro del sistema completo. Además, la separación entre captura de datos, procesamiento y visualización facilita el mantenimiento del diseño y reduce la complejidad de depuración durante las etapas de simulación e implementación física.
 
-#### 5. Testbench
-Descripción y resultados de las pruebas hechas
-
-### Otros modulos
-- agregar informacion siguiendo el ejemplo anterior.
-
-
-## 4. Consumo de recursos
-
-## 5. Problemas encontrados durante el proyecto
-
-## Diagramas para informe
 
 **Diagrama general**
 ```mermaid
