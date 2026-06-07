@@ -573,159 +573,99 @@ Los resultados obtenidos coinciden con los valores teóricos esperados para cada
 
 **Figura 9.** Simulación funcional del módulo `system_top_direct`. Se observa la ejecución de distintas operaciones de división, la generación de los valores de cociente y residuo, y el funcionamiento del subsistema de visualización mediante las señales de segmentos y selección de displays.
 
+## 13. Consumo de recursos
+
+El consumo de recursos se obtuvo a partir del reporte de utilización generado por la herramienta `nextpnr-gowin` durante la etapa de place-and-route. La Tabla 5 resume los principales recursos utilizados por el diseño dentro de la FPGA Tang Nano 9K.
+
+| Recurso   | Utilizado | Disponible | Utilización |
+| --------- | --------: | ---------: | ----------: |
+| VCC       |         1 |          1 |       100 % |
+| SLICE     |      1359 |       8640 |        15 % |
+| IOB       |        21 |        274 |         7 % |
+| ODDR      |         0 |        274 |         0 % |
+| MUX2_LUT5 |       317 |       4320 |         7 % |
+| MUX2_LUT6 |       151 |       2160 |         6 % |
+| MUX2_LUT7 |        73 |       1080 |         6 % |
+| MUX2_LUT8 |        31 |       1056 |         2 % |
+| GND       |         1 |          1 |       100 % |
+| RAMW      |         0 |        270 |         0 % |
+| GSR       |         1 |          1 |       100 % |
+| OSC       |         0 |          1 |         0 % |
+| rPLL      |         0 |          2 |         0 % |
+
+**Tabla 5.** Utilización de recursos de la FPGA reportada por la herramienta de place-and-route.
+
+Los resultados muestran que el recurso más utilizado corresponde a los bloques lógicos tipo **SLICE**, de los cuales se emplean 1359 de los 8640 disponibles, equivalente al 15 % de la capacidad total del dispositivo. Este recurso contiene la lógica combinacional y secuencial utilizada para implementar los módulos de división, captura de datos, conversión binario a BCD y control de despliegue.
+
+Asimismo, se utilizan 21 bloques de entrada/salida (IOB), correspondientes a las conexiones físicas necesarias para la interacción con el exterior. Por otra parte, el diseño no requiere memoria interna (RAMW), osciladores dedicados (OSC) ni bloques PLL (rPLL), por lo que dichos recursos permanecen disponibles para futuras ampliaciones.
+
+En general, la utilización obtenida demuestra que el sistema ocupa una fracción relativamente pequeña de los recursos disponibles en la FPGA Tang Nano 9K, permitiendo la incorporación de funcionalidades adicionales sin comprometer la capacidad del dispositivo.
+
+
+
+## 14. Reporte de temporización
+
+El reporte de temporización se obtuvo a partir de la etapa de place-and-route realizada con `nextpnr-gowin`. El diseño fue evaluado utilizando como referencia la frecuencia de reloj de 27 MHz correspondiente a la Tang Nano 9K.
+
+El reporte indica que la frecuencia máxima estimada para el reloj principal del sistema es de 50.42 MHz, obteniendo resultado `PASS` para la frecuencia objetivo de 27 MHz. Esto significa que el circuito cumple con los requisitos temporales establecidos para su implementación en la FPGA.
+
+| Parámetro                   |     Valor |
+| --------------------------- | --------: |
+| Frecuencia requerida        | 27.00 MHz |
+| Frecuencia máxima reportada | 50.42 MHz |
+| Resultado                   |      PASS |
+
+La frecuencia máxima reportada es superior a la frecuencia requerida, por lo que el diseño puede operar correctamente con el reloj disponible en la tarjeta. Además, el cumplimiento temporal indica que la ruta crítica del circuito no impide el funcionamiento del sistema a la frecuencia de operación especificada.
+
+## 15. Análisis de problemas encontrados y soluciones aplicadas
+
+Durante el desarrollo del sistema se identificaron diversos desafíos relacionados con la implementación de la división binaria, la interacción entre módulos secuenciales y la representación de los resultados en los displays de siete segmentos. A continuación se describen los principales problemas encontrados y las soluciones adoptadas.
+
+### 15.1 Sincronización entre la solicitud y finalización de la división
+
+El módulo divisor requiere varios ciclos de reloj para completar una operación. Inicialmente, la captura de resultados se intentó realizar inmediatamente después de aplicar los operandos, lo que producía lecturas incorrectas o resultados incompletos.
+
+Para solucionar este problema se implementó una interfaz de control basada en las señales `valid_i` y `done_o`. La señal `valid_i` indica el inicio de una nueva operación, mientras que `done_o` informa cuándo el cociente y el residuo son válidos. De esta forma se garantiza una correcta sincronización entre el bloque de control y la unidad de división.
+
+### 15.2 Manejo de la división entre cero
+
+La operación de división entre cero constituye una condición especial que no puede resolverse mediante el algoritmo normal de división. Si no se considera adecuadamente, el sistema puede generar resultados indefinidos o comportamientos inesperados.
+
+Para resolver esta situación se incorporó la señal `div_zero_o`, la cual detecta cuando el divisor es igual a cero. Cuando esta condición ocurre, el sistema evita ejecutar la división y genera una indicación específica para el usuario, manteniendo el funcionamiento seguro del circuito.
+
+### 15.3 Conversión de resultados para visualización decimal
+
+El cociente y el residuo producidos por el divisor se encuentran en formato binario. Sin embargo, los displays de siete segmentos requieren valores decimales para una visualización intuitiva por parte del usuario.
+
+Para solucionar este problema se implementó el módulo `bin_to_bcd`, encargado de convertir los resultados binarios a dígitos BCD. Esta etapa permite representar correctamente los valores obtenidos sin necesidad de realizar conversiones manuales externas.
+
+### 15.4 Multiplexado de los displays
+
+La FPGA dispone de un número limitado de pines de salida, por lo que no resulta práctico controlar cada display de forma completamente independiente. Además, los cuatro displays comparten las mismas líneas de segmentos.
+
+La solución consistió en implementar un esquema de multiplexado mediante el módulo `display_mux4`. Este bloque activa un único display a la vez y alterna rápidamente entre ellos utilizando un contador interno. Debido a la persistencia visual del ojo humano, los cuatro displays aparentan permanecer encendidos simultáneamente.
+
+### 15.5 Integración de los módulos del sistema
+
+El diseño completo se desarrolló de forma modular, utilizando bloques independientes para captura de datos, división, conversión BCD y despliegue. Durante la integración fue necesario verificar cuidadosamente la compatibilidad de señales, anchos de buses y tiempos de activación entre módulos.
+
+La utilización de testbenches individuales permitió validar cada subsistema por separado antes de realizar la integración final. Posteriormente, el testbench del sistema completo confirmó el correcto funcionamiento de la comunicación entre todos los bloques y la generación de los resultados esperados.
+
+## 16. Conclusiones
+
+1. Se logró diseñar e implementar correctamente un sistema digital capaz de realizar divisiones enteras utilizando la FPGA Tang Nano 9K. El sistema permite ingresar los operandos, ejecutar la operación de división y visualizar tanto el cociente como el residuo mediante displays de siete segmentos.
+
+2. La utilización de una arquitectura modular facilitó el desarrollo y la depuración del proyecto. La separación en bloques independientes para captura de datos, división, conversión binario a BCD y despliegue permitió verificar cada subsistema de manera individual antes de realizar la integración completa.
+
+3. Las simulaciones funcionales realizadas mediante testbenches confirmaron el correcto comportamiento de los módulos principales y del sistema integrado. Los resultados obtenidos coincidieron con los valores teóricos esperados para todos los casos de prueba considerados, incluyendo condiciones especiales como la división entre cero.
+
+4. La implementación del conversor binario a BCD permitió representar adecuadamente los resultados en formato decimal, simplificando la interacción con el usuario y mejorando la interpretación de la información mostrada en los displays.
+
+5. El análisis de utilización de recursos mostró que el diseño emplea únicamente una fracción de la capacidad disponible de la FPGA, utilizando aproximadamente un 15 % de los bloques lógicos del dispositivo. Esto demuestra que la solución propuesta es eficiente y deja margen suficiente para futuras ampliaciones o mejoras del sistema.
+
+6. El reporte de temporización indicó una frecuencia máxima de operación superior a la frecuencia requerida por la tarjeta, cumpliendo satisfactoriamente las restricciones temporales del proyecto. Esto confirma que el sistema puede operar de forma confiable en la plataforma seleccionada.
 
 
 
 
-
-
-
-
-
-
-**Diagrama general**
-```mermaid
-flowchart TD
-    A[Teclado hexadecimal] --> B[Subsistema de lectura]
-    B --> C[Conversión BCD a binario]
-    C --> D[Subsistema de división entera]
-    D --> E[Conversión binario a BCD]
-    E --> F[Selector cociente / residuo]
-    F --> G[Display 7 segmentos]
-```
-
-**Diagrama divider_cell**
-```mermaid
-flowchart LR
-    A[r_i] --> S[Resta por complemento a 2]
-    B[b_i] --> S
-    C[cin_i] --> S
-
-    S --> D[diff_o]
-    S --> E[cout_o]
-
-    A --> M[MUX]
-    D --> M
-    F[accept_i] --> M
-    M --> G[r_next_o]
-```
-Celda básica de 1 bit que realiza una resta por complemento a dos y selecciona entre el resultado calculado o el residuo original según accept_i.
-
-**Diaframa divider_row**
-```mermaid
-flowchart LR
-    START["carry inicial = 1"] --> C0["Celda bit 0"]
-    C0 -->|"carry"| C1["Celda bit 1"]
-    C1 -->|"carry"| C2["Celda bit 2"]
-    C2 -->|"carry"| C3["Celda bit 3"]
-    C3 --> COUT["cout_o"]
-
-    RI["r_i de 4 bits"] --> C0
-    RI --> C1
-    RI --> C2
-    RI --> C3
-
-    BI["b_i de 4 bits"] --> C0
-    BI --> C1
-    BI --> C2
-    BI --> C3
-
-    ACC["accept_i común"] --> C0
-    ACC --> C1
-    ACC --> C2
-    ACC --> C3
-
-    C0 --> D0["diff_o bit 0 / r_next_o bit 0"]
-    C1 --> D1["diff_o bit 1 / r_next_o bit 1"]
-    C2 --> D2["diff_o bit 2 / r_next_o bit 2"]
-    C3 --> D3["diff_o bit 3 / r_next_o bit 3"]
-```
-Fila de 4 bits construida a partir de varias celdas divider_cell conectadas en cascada, donde el acarreo se propaga entre celdas y se obtiene una resta completa del residuo parcial contra el divisor.
-
-**Diagrama divider_stage**
-```mermaid
-flowchart LR
-    RI["r_i de 4 bits"] --> ROW["divider_row"]
-    BI["b_i de 4 bits"] --> ROW
-    ACC["accept_i fijo en 1"] --> ROW
-
-    ROW --> DIFF["diff_o de 4 bits"]
-    ROW --> COUT["cout_o"]
-
-    RI --> MUX["MUX selector de residuo"]
-    DIFF --> MUX
-    COUT --> MUX
-
-    MUX --> RNEXT["r_next_o de 4 bits"]
-
-    COUT --> QBIT["q_bit_o"]
-```
-divider_stage representa una etapa de decisión del divisor. Internamente utiliza divider_row para intentar restar el divisor al residuo parcial, forzando accept_i en 1 para obtener el resultado de la resta. Luego, el acarreo final cout_o se utiliza como señal de decisión: si cout_o es 1, la resta fue válida y se acepta diff_o como nuevo residuo; si cout_o es 0, la resta no fue válida y se conserva el residuo anterior r_i. Esta misma señal se entrega como q_bit_o, correspondiente al bit del cociente generado por la etapa.
-
-**Diagrama divisor completo**
-```mermaid
-flowchart TD
-    A["dividend_i de 6 bits"] --> S5["Etapa bit 5"]
-    B["divisor_i de 4 bits"] --> S5
-    S5 --> Q5["quotient bit 5"]
-    S5 --> S4["Etapa bit 4"]
-
-    B --> S4
-    S4 --> Q4["quotient bit 4"]
-    S4 --> S3["Etapa bit 3"]
-
-    B --> S3
-    S3 --> Q3["quotient bit 3"]
-    S3 --> S2["Etapa bit 2"]
-
-    B --> S2
-    S2 --> Q2["quotient bit 2"]
-    S2 --> S1["Etapa bit 1"]
-
-    B --> S1
-    S1 --> Q1["quotient bit 1"]
-    S1 --> S0["Etapa bit 0"]
-
-    B --> S0
-    S0 --> Q0["quotient bit 0"]
-    S0 --> R["remainder_o"]
-```
-
-**Diagrama divider_comb**
-```mermaid
-flowchart LR
-    A["dividend_i de 6 bits"] --> B["Cadena de 6 divider_stage"]
-    D["divisor_i de 4 bits"] --> E["divisor_ext de 5 bits"]
-    E --> B
-    B --> Q["quotient_o de 6 bits"]
-    B --> R["remainder_o de 4 bits"]
-    D --> Z["div_zero_o"]
-```
-El módulo divider_comb implementa un divisor combinacional sin signo para un dividendo de 6 bits y un divisor de 4 bits. Internamente utiliza seis módulos divider_stage conectados en secuencia, uno por cada bit del dividendo, desde el bit más significativo hasta el menos significativo. En cada etapa se genera un bit del cociente y se actualiza el residuo parcial. El divisor se extiende a 5 bits para permitir la operación de resta con el residuo desplazado. Finalmente, los bits q5 a q0 se agrupan para formar quotient_o, el residuo final se entrega como remainder_o y se incluye una señal div_zero_o para detectar división entre cero.
-
-**Diagrama divider_core**
-```mermaid
-flowchart TD
-    CLK["clk"] --> CORE["divider_core"]
-    RST["rst_n"] --> CORE
-    VALID["valid_i"] --> CORE
-    A["dividend_i de 6 bits"] --> INREG["Registros de entrada"]
-    B["divisor_i de 4 bits"] --> INREG
-
-    INREG --> COMB["divider_comb"]
-    COMB --> OUTREG["Registros de salida"]
-
-    OUTREG --> Q["quotient_o de 6 bits"]
-    OUTREG --> R["remainder_o de 4 bits"]
-    OUTREG --> Z["div_zero_o"]
-    OUTREG --> D["done_o"]
-
-    CORE --> INREG
-    CORE --> OUTREG
-```
-El módulo divider_core encapsula el divisor combinacional divider_comb dentro de una interfaz sincrónica. Cuando valid_i se activa, el módulo registra las entradas dividend_i y divisor_i. Luego utiliza divider_comb para obtener el cociente, residuo y bandera de división entre cero. En el siguiente ciclo de reloj, registra las salidas quotient_o, remainder_o y div_zero_o, y activa done_o para indicar que el resultado está estable. Este diseño permite que el subsistema de división tenga una interfaz controlada por valid/done, cumpliendo con el flujo de datos registrado requerido para los subsistemas del proyecto.
-
-
-## Apendices:
-### Apendice 1:
-texto, imágen, etc
+*
