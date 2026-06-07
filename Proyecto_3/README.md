@@ -144,6 +144,79 @@ El despliegue de información se implementó mediante multiplexado de cuatro dis
 Finalmente, se incorporó un módulo de selección de resultados que permite alternar entre la visualización del cociente y el residuo una vez concluida la operación de división. Esta decisión evita la necesidad de utilizar displays adicionales y permite presentar toda la información requerida utilizando el mismo subsistema de visualización.
 
 
+## 7. Subsistema de lectura del teclado hexadecimal
+
+El módulo `keypad_reader` se encarga de leer un teclado hexadecimal de matriz 4×4. Para ello, genera un barrido periódico sobre las filas mediante la señal `filas[3:0]` y monitorea continuamente el estado de las columnas a través de la señal `columnas[3:0]`.
+
+El teclado opera con lógica activa en bajo. En condiciones normales, todas las columnas permanecen en estado alto (`4'hF`). Cuando una tecla es presionada, la fila activa se conecta con una de las columnas, provocando que ésta cambie a nivel bajo. A partir de la combinación entre la fila activa y la columna detectada, el módulo determina el código hexadecimal correspondiente a la tecla presionada.
+
+La salida principal del módulo está formada por una señal `key_value`, que contiene el código hexadecimal detectado, y una señal `key_valid`, que indica mediante un pulso de un ciclo de reloj que una nueva tecla válida ha sido capturada.
+
+### 7.1 Funcionamiento interno
+
+El módulo está compuesto por los siguientes elementos internos:
+
+* **scan_cnt:** contador encargado de definir el tiempo durante el cual permanece activa cada fila del teclado.
+* **fila_index:** registro que selecciona la fila actualmente activa durante el proceso de barrido.
+* **columnas_ff1** y **columnas_sync:** registros utilizados para sincronizar las señales provenientes del teclado con el reloj interno de la FPGA.
+* **key_code:** código hexadecimal obtenido a partir de la combinación fila-columna detectada.
+* **key_valid:** pulso de validación generado cuando se detecta una nueva tecla.
+* **locked:** bandera que impide múltiples capturas mientras una misma tecla permanece presionada.
+* **release_cnt:** contador utilizado para verificar la liberación de la tecla antes de permitir una nueva detección.
+
+La sincronización de las entradas externas mediante registros reduce el riesgo de metaestabilidad, mientras que el mecanismo de bloqueo evita que una única pulsación genere múltiples eventos de lectura.
+
+### 7.2 Mapeo de teclas
+
+La Tabla 1 muestra la correspondencia entre la fila activa, la columna detectada y el código hexadecimal generado por el módulo.
+
+| Fila activa | Columna detectada | Tecla |
+| ----------- | ----------------- | ----- |
+| 1110        | 1110              | * / E |
+| 1110        | 1101              | 0     |
+| 1110        | 1011              | # / F |
+| 1110        | 0111              | D     |
+| 1101        | 1110              | 7     |
+| 1101        | 1101              | 8     |
+| 1101        | 1011              | 9     |
+| 1101        | 0111              | C     |
+| 1011        | 1110              | 4     |
+| 1011        | 1101              | 5     |
+| 1011        | 1011              | 6     |
+| 1011        | 0111              | B     |
+| 0111        | 1110              | 1     |
+| 0111        | 1101              | 2     |
+| 0111        | 1011              | 3     |
+| 0111        | 0111              | A     |
+
+Para el funcionamiento del sistema de división se utilizan principalmente los dígitos decimales de `0` a `9`. Adicionalmente, algunas teclas son empleadas como comandos de control:
+
+* **# (4'hF):** confirma la entrada actual y permite avanzar al siguiente paso del proceso de captura.
+* *** (4'hE):** reinicia o borra los datos almacenados.
+* **D (4'hD):** permite alternar entre la visualización del cociente y el residuo una vez finalizada la división.
+
+### 7.3 Diagrama del subsistema de lectura
+
+```mermaid
+flowchart LR
+    COL[columnas 3:0] --> SYNC[Sincronizador de columnas]
+    CLK[clk 27 MHz] --> SCAN[Contador de barrido]
+    SCAN --> FILA[fila_index]
+    FILA --> FILAS[filas 3:0]
+
+    SYNC --> DEC[Decodificador fila-columna]
+    FILA --> DEC
+
+    DEC --> LOCK[Lógica de bloqueo y liberación]
+    LOCK --> KV[key_value 3:0]
+    LOCK --> VALID[key_valid]
+```
+
+**Figura 1.** Diagrama de bloques del subsistema de lectura del teclado hexadecimal.
+
+El subsistema de lectura constituye la interfaz principal entre el usuario y la FPGA. Su función es transformar las pulsaciones realizadas sobre el teclado en códigos digitales sincronizados y libres de rebotes, permitiendo que los módulos posteriores procesen la información de manera confiable.
+
+
 ## 3. Desarrollo
 
 ### 3.0 Descripción general del sistema
