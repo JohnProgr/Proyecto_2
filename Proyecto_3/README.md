@@ -217,6 +217,93 @@ flowchart LR
 El subsistema de lectura constituye la interfaz principal entre el usuario y la FPGA. Su función es transformar las pulsaciones realizadas sobre el teclado en códigos digitales sincronizados y libres de rebotes, permitiendo que los módulos posteriores procesen la información de manera confiable.
 
 
+## 8. Subsistema de control de entrada
+
+El módulo `input_controller` se encarga de administrar el proceso de captura de datos y coordinar el inicio de la operación de división. Su función principal consiste en interpretar las teclas generadas por el módulo `keypad_reader`, construir los valores correspondientes al dividendo y al divisor, y generar la señal de validación que inicia el cálculo dentro del subsistema de división.
+
+A diferencia del proyecto anterior, donde la lógica de control se utilizaba para almacenar dos operandos destinados a una suma, en este proyecto el controlador debe gestionar el ingreso secuencial de un dividendo y un divisor, verificando además que ambos valores se encuentren dentro de los límites establecidos por la especificación del diseño.
+
+### 8.1 Captura del dividendo
+
+Durante la primera etapa de operación, las teclas numéricas ingresadas por el usuario son utilizadas para construir el dividendo. Cada nuevo dígito se incorpora al valor previamente almacenado mediante operaciones de desplazamiento decimal, permitiendo ingresar números de varios dígitos de manera similar a una calculadora.
+
+Mientras el dividendo se encuentra en proceso de captura, el sistema permanece a la espera de una señal de confirmación por parte del usuario. Cuando se presiona la tecla `#`, el controlador considera finalizada la entrada del dividendo y habilita la captura del divisor.
+
+### 8.2 Captura del divisor
+
+Una vez confirmado el dividendo, el controlador comienza a almacenar los dígitos correspondientes al divisor. El procedimiento de captura es similar al utilizado para el dividendo, permitiendo construir progresivamente el valor decimal a partir de las teclas ingresadas.
+
+Cuando el usuario presiona nuevamente la tecla `#`, el controlador interpreta que ambos operandos han sido ingresados correctamente y procede a iniciar la operación de división.
+
+### 8.3 Inicio de la división
+
+Después de capturar los dos operandos, el módulo genera un pulso sobre la señal `valid`, indicando al subsistema `divider_core` que los datos de entrada son válidos y pueden ser procesados.
+
+El dividendo y el divisor permanecen almacenados en registros internos mientras el bloque de división ejecuta el algoritmo correspondiente. De esta manera se garantiza que los datos permanezcan estables durante toda la operación.
+
+### 8.4 Espera del resultado
+
+Una vez iniciada la división, el controlador monitorea la señal `done` proveniente del módulo `divider_core`. Esta señal indica que el cociente y el residuo ya han sido calculados y registrados correctamente.
+
+Mientras `done` permanece inactivo, el sistema continúa esperando la finalización de la operación. Cuando `done` se activa, el resultado queda disponible para ser enviado al subsistema de visualización.
+
+### 8.5 Reinicio de la captura
+
+El sistema permite reiniciar la captura de datos mediante la tecla `*`. Cuando esta tecla es detectada, los registros internos se limpian y el controlador retorna al estado inicial, permitiendo ingresar una nueva operación de división.
+
+### 8.6 Diagrama de estados
+
+La Figura 2 muestra el diagrama de estados utilizado por el subsistema de control de entrada.
+
+```mermaid
+stateDiagram-v2
+    [*] --> INPUT_DIVIDEND
+
+    INPUT_DIVIDEND --> INPUT_DIVIDEND : tecla 0-9
+    INPUT_DIVIDEND --> INPUT_DIVISOR : tecla #
+
+    INPUT_DIVISOR --> INPUT_DIVISOR : tecla 0-9
+    INPUT_DIVISOR --> START_DIVISION : tecla #
+
+    START_DIVISION --> WAIT_DONE : valid
+
+    WAIT_DONE --> WAIT_DONE : done = 0
+    WAIT_DONE --> RESULT_READY : done = 1
+
+    RESULT_READY --> INPUT_DIVIDEND : tecla *
+```
+
+**Figura 2.** Diagrama de estados del subsistema de control de entrada.
+
+### 8.7 Diagrama del subsistema de control
+
+```mermaid
+flowchart LR
+    KV[key_value]
+    VALID[key_valid]
+
+    KV --> CTRL[input_controller]
+    VALID --> CTRL
+
+    CTRL --> DIVIDEND[Registro dividendo]
+    CTRL --> DIVISOR[Registro divisor]
+
+    CTRL --> V[valid]
+
+    V --> DIVIDER[divider_core]
+
+    DIVIDER --> D[done]
+
+    D --> CTRL
+
+    DIVIDER --> Q[Cociente]
+    DIVIDER --> R[Residuo]
+```
+
+**Figura 3.** Diagrama de bloques del subsistema de control y captura de datos.
+
+
+
 ## 3. Desarrollo
 
 ### 3.0 Descripción general del sistema
