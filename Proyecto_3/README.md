@@ -503,6 +503,25 @@ flowchart LR
 
 La estructura modular utilizada permite verificar cada subsistema de manera independiente antes de integrarlos dentro del sistema completo. Además, la separación entre captura de datos, procesamiento y visualización facilita el mantenimiento del diseño y reduce la complejidad de depuración durante las etapas de simulación e implementación física.
 
+## 12. Testbench y simulaciones
+La verificación funcional del proyecto se realizó mediante testbenches individuales para los principales módulos del sistema. Los archivos de simulación se encuentran en la carpeta src/sim.
+
+12.1 Testbench del lector de teclado
+
+El archivo tb_keypad_reader.sv se utiliza para verificar el funcionamiento del módulo keypad_reader. Con el fin de acelerar la simulación, los parámetros SCAN_DELAY y RELEASE_DELAY fueron reducidos respecto a sus valores de implementación física, permitiendo observar varias secuencias de barrido y detección de teclas en un intervalo de tiempo corto.
+
+Durante la simulación se emulan diferentes pulsaciones sobre el teclado hexadecimal mediante la modificación controlada de las señales de columnas. El objetivo es verificar que el módulo detecte correctamente cada tecla, genere el código hexadecimal correspondiente y produzca un pulso de validación únicamente cuando ocurre una nueva pulsación.
+
+La Figura 7 muestra el comportamiento temporal de las señales más relevantes del subsistema de lectura. Se observa el barrido periódico de las filas mediante la señal filas, la sincronización de las entradas externas a través de columnas_sync, la detección de teclas mediante key_code y la generación de los pulsos key_valid. Asimismo, puede observarse la activación de la señal locked, la cual evita múltiples detecciones mientras una misma tecla permanece presionada.
+
+Durante la simulación se verificó la correcta detección de distintas teclas, observándose que los valores generados en key_value coinciden con los códigos esperados. Además, la FSM interna de lectura mantiene el funcionamiento adecuado del mecanismo de barrido y liberación de tecla, garantizando una captura confiable de las entradas provenientes del teclado hexadecimal.
+
+Simulación del lector de teclado
+
+<img width="1305" height="295" alt="image" src="https://github.com/user-attachments/assets/dbf4479b-5bda-4a83-b77a-edc57815647f" />
+
+
+Figura 7. Simulación funcional del módulo keypad_reader. Se observa el barrido de filas, la sincronización de las señales provenientes del teclado, la detección de pulsaciones y la generación de los códigos key_value junto con el pulso de validación key_valid.
 
 **Diagrama general**
 ```mermaid
