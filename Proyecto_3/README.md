@@ -69,6 +69,62 @@ Diseñar e implementar una unidad de división entera sin signo en una FPGA Tang
 
 * Desplegar el cociente y el residuo obtenidos en displays de siete segmentos mediante los módulos de conversión y visualización desarrollados.
 
+### 5.0 Descripción general del sistema
+
+El sistema desarrollado implementa una unidad de división entera sin signo sobre una FPGA Tang Nano 9K. Su función principal consiste en recibir un dividendo y un divisor desde un teclado hexadecimal, ejecutar la operación de división y desplegar en displays de siete segmentos el cociente o el residuo obtenido.
+
+El flujo de operación inicia en el módulo de lectura del teclado, el cual realiza el barrido de las filas, sincroniza las señales provenientes de las columnas y genera un código hexadecimal de 4 bits junto con una señal de validación. Posteriormente, el módulo de control de entrada interpreta las teclas ingresadas por el usuario y construye los valores correspondientes al dividendo y al divisor en formato binario.
+
+Durante la captura de datos, las teclas numéricas de 0 a 9 son utilizadas para ingresar los dígitos decimales. La tecla `#`, codificada internamente como `4'hF`, se utiliza para confirmar la entrada actual y avanzar al siguiente paso del proceso. La tecla `*`, codificada como `4'hE`, permite borrar la información almacenada y reiniciar la captura de datos.
+
+Una vez ingresados el dividendo y el divisor, el módulo de control genera una señal `valid` que inicia la operación de división dentro del subsistema `divider_core`. Este bloque encapsula un divisor combinacional basado en etapas sucesivas de resta y selección de residuo, entregando como resultado el cociente, el residuo y una señal `done` que indica que el resultado es válido y estable.
+
+Después de completarse la división, el sistema permite visualizar el cociente o el residuo mediante una señal de selección. La tecla `D`, codificada como `4'hD`, conmuta entre ambas visualizaciones una vez que el resultado se encuentra disponible.
+
+Finalmente, el resultado seleccionado se convierte a formato BCD y se envía al subsistema de despliegue, el cual utiliza multiplexado para controlar cuatro displays de siete segmentos. Mientras la división no haya finalizado, el sistema muestra el valor que el usuario se encuentra ingresando; cuando la operación concluye, se despliega automáticamente el resultado calculado.
+
+El diseño se compone de los siguientes módulos principales:
+
+| Módulo                         | Función principal                                                                                                      |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `keypad_reader.sv`             | Realiza el barrido del teclado hexadecimal, sincroniza las entradas y genera las señales `key_value` y `key_valid`.    |
+| `input_controller.sv`          | Controla la captura del dividendo y divisor, valida los límites permitidos y genera la señal de inicio de la división. |
+| `divider_cell.sv`              | Implementa la celda elemental de resta y selección utilizada por el divisor.                                           |
+| `divider_row.sv`               | Construye una fila completa de resta mediante varias celdas `divider_cell` conectadas en cascada.                      |
+| `divider_stage.sv`             | Ejecuta una etapa del algoritmo de división y genera un bit del cociente junto con el nuevo residuo parcial.           |
+| `divider_comb.sv`              | Implementa el divisor combinacional completo utilizando varias etapas de división conectadas secuencialmente.          |
+| `divider_core.sv`              | Encapsula el divisor combinacional dentro de una interfaz sincrónica basada en las señales `valid` y `done`.           |
+| `result_selector.sv`           | Selecciona entre mostrar el cociente o el residuo calculado.                                                           |
+| `bin_to_bcd.sv`                | Convierte los resultados binarios a formato BCD para su despliegue decimal.                                            |
+| `display_hex_decoder.sv`       | Convierte cada dígito BCD en el patrón correspondiente para un display de siete segmentos.                             |
+| `display_mux4.sv`              | Realiza el multiplexado de los cuatro displays.                                                                        |
+| `display_result_controller.sv` | Coordina la selección, conversión y despliegue de los datos mostrados al usuario.                                      |
+| `system_top.sv`                | Módulo superior que integra todos los subsistemas y coordina el flujo completo de operación.                           |
+
+La Figura X muestra el diagrama general de interconexión del sistema desarrollado.
+
+```mermaid
+flowchart TD
+    A[Teclado hexadecimal]
+    B[keypad_reader]
+    C[input_controller]
+    D[divider_core]
+    E[result_selector]
+    F[bin_to_bcd]
+    G[display_result_controller]
+    H[Displays de 7 segmentos]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+```
+
+**Figura X.** Diagrama general de bloques del sistema de división entera implementado.
+
 
 ## 3. Desarrollo
 
