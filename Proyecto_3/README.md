@@ -659,7 +659,15 @@ El diseño completo se desarrolló de forma modular, utilizando bloques independ
 
 La utilización de testbenches individuales permitió validar cada subsistema por separado antes de realizar la integración final. Posteriormente, el testbench del sistema completo confirmó el correcto funcionamiento de la comunicación entre todos los bloques y la generación de los resultados esperados.
 
-## 16. Conclusiones
+## 16. Implementación Física
+
+La implementación física del sistema conecta la FPGA Tang Nano 9K con el teclado hexadecimal y los 2 displays de 7 segmentos. El teclado funciona como dispositivo de entrada, mientras que los displays se utilizan para mostrar el número que se está ingresando o el resultado de la división.
+
+<img width="1080" height="1570" alt="WhatsApp Image 2026-06-07 at 5 10 25 PM" src="https://github.com/user-attachments/assets/93a2bda1-afa3-4bae-b55a-241e04df1bad" />
+
+Figura 11. Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
+
+## 17. Conclusiones
 
 1. Se logró diseñar e implementar correctamente un sistema digital capaz de realizar divisiones enteras utilizando la FPGA Tang Nano 9K. El sistema permite ingresar los operandos, ejecutar la operación de división y visualizar tanto el cociente como el residuo mediante displays de siete segmentos.
 
