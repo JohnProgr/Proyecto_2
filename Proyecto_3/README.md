@@ -1,4 +1,4 @@
-# Nombre del proyecto
+# Divisor con FPGA 
 
 ## 1. Abreviaturas y definiciones
 
