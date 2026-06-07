@@ -101,7 +101,7 @@ El diseño se compone de los siguientes módulos principales:
 | `display_result_controller.sv` | Coordina la selección, conversión y despliegue de los datos mostrados al usuario.                                      |
 | `system_top.sv`                | Módulo superior que integra todos los subsistemas y coordina el flujo completo de operación.                           |
 
-La Figura X muestra el diagrama general de interconexión del sistema desarrollado.
+La Figura 1 muestra el diagrama general de interconexión del sistema desarrollado.
 
 ```mermaid
 flowchart TD
@@ -123,7 +123,25 @@ flowchart TD
     G --> H
 ```
 
-**Figura X.** Diagrama general de bloques del sistema de división entera implementado.
+**Figura 1.** Diagrama general de bloques del sistema de división entera implementado.
+
+## 6. Criterio de diseño
+
+El diseño se realizó de manera modular con el objetivo de separar claramente la ruta de datos de la lógica de control. Esta estrategia facilita la verificación individual de cada subsistema, simplifica la depuración del proyecto y permite reutilizar módulos previamente desarrollados. En lugar de concentrar toda la funcionalidad en un único bloque, el sistema se dividió en subsistemas de lectura, captura de datos, división, selección de resultados y despliegue.
+
+La captura de datos se implementó mediante un módulo de control encargado de interpretar las teclas ingresadas por el usuario y determinar si corresponden al dividendo, al divisor o a una instrucción de control. Este enfoque permite administrar de forma ordenada el flujo de operación del sistema, garantizando que los datos sean almacenados y procesados únicamente cuando se encuentran completos y son válidos.
+
+Las señales provenientes del teclado hexadecimal son externas a la FPGA y, por lo tanto, asíncronas respecto al reloj interno de 27 MHz. Para reducir el riesgo de metaestabilidad, las entradas se sincronizan mediante registros antes de ser utilizadas por la lógica principal. Además, se implementó un mecanismo de bloqueo y liberación de tecla para evitar múltiples capturas producidas por una misma pulsación.
+
+La operación de división se implementó utilizando una arquitectura jerárquica compuesta por celdas elementales de resta (`divider_cell`), agrupadas en filas (`divider_row`) y posteriormente en etapas de división (`divider_stage`). Esta organización permite construir el divisor completo a partir de bloques simples y fácilmente verificables. Cada etapa determina un bit del cociente y actualiza el residuo parcial mediante operaciones de resta y selección controlada.
+
+Con el fin de cumplir los requisitos de sincronización entre subsistemas, el divisor combinacional fue encapsulado dentro de una interfaz registrada (`divider_core`). De esta forma, la operación se inicia mediante una señal `valid` y el resultado se entrega acompañado por una señal `done`, lo que permite desacoplar la lógica de cálculo de la lógica de control y garantizar que los datos de salida sean estables antes de ser utilizados por otros módulos.
+
+Los resultados internos de la división se representan en formato binario, ya que este formato simplifica las operaciones aritméticas y reduce la complejidad del hardware. Sin embargo, debido a que la información debe mostrarse al usuario en formato decimal, se implementó un bloque de conversión de binario a BCD antes del subsistema de despliegue.
+
+El despliegue de información se implementó mediante multiplexado de cuatro displays de siete segmentos. Esta técnica permite utilizar un conjunto compartido de líneas de segmentos mientras se activa un único display a la vez mediante las señales de ánodo. Gracias a la alta frecuencia de refresco generada por la FPGA, el usuario percibe todos los dígitos encendidos simultáneamente.
+
+Finalmente, se incorporó un módulo de selección de resultados que permite alternar entre la visualización del cociente y el residuo una vez concluida la operación de división. Esta decisión evita la necesidad de utilizar displays adicionales y permite presentar toda la información requerida utilizando el mismo subsistema de visualización.
 
 
 ## 3. Desarrollo
