@@ -302,6 +302,103 @@ flowchart LR
 
 **Figura 3.** Diagrama de bloques del subsistema de control y captura de datos.
 
+## 9. Subsistema de división entera
+
+El subsistema de división entera es el bloque encargado de calcular el cociente y el residuo a partir del dividendo y divisor ingresados por el usuario. En este proyecto se trabaja con división entera sin signo, por lo que todos los operandos se interpretan como valores positivos.
+
+El dividendo se representa mediante 6 bits, lo que permite valores desde 0 hasta 63. El divisor se representa mediante 4 bits, permitiendo valores desde 0 hasta 15. Como resultado, el sistema entrega un cociente de 6 bits y un residuo de 4 bits. Además, se incluye una señal de detección de división entre cero para identificar operaciones inválidas.
+
+La división se implementa mediante una estructura jerárquica formada por los módulos `divider_cell`, `divider_row`, `divider_stage`, `divider_comb` y `divider_core`. Esta organización permite construir el divisor completo a partir de bloques pequeños, facilitando la verificación individual de cada etapa.
+
+### 9.1 Principio de funcionamiento
+
+El algoritmo utilizado se basa en el método de división binaria por restas sucesivas parciales. En cada etapa, se forma un residuo parcial y se intenta restar el divisor. Si la resta es válida, el resultado de la resta se acepta como nuevo residuo y se genera un bit de cociente igual a 1. Si la resta no es válida, se conserva el residuo anterior y el bit de cociente generado es 0.
+
+La operación cumple la relación fundamental de la división entera:
+
+```text
+dividendo = divisor × cociente + residuo
+```
+
+donde el residuo debe ser menor que el divisor cuando la operación es válida.
+
+### 9.2 Módulo `divider_cell`
+
+El módulo `divider_cell` representa la celda elemental del divisor. Esta celda trabaja sobre un solo bit y se encarga de realizar parte de la resta por complemento a dos entre el residuo parcial y el divisor. Además, incluye una selección que permite escoger entre conservar el bit original del residuo o aceptar el bit calculado por la resta.
+
+Sus señales principales son:
+
+| Señal      | Función                                                 |
+| ---------- | ------------------------------------------------------- |
+| `r_i`      | Bit del residuo parcial de entrada.                     |
+| `b_i`      | Bit del divisor.                                        |
+| `cin_i`    | Acarreo de entrada utilizado en la resta.               |
+| `accept_i` | Señal que indica si se acepta el resultado de la resta. |
+| `diff_o`   | Bit resultante de la operación de resta.                |
+| `cout_o`   | Acarreo de salida hacia la siguiente celda.             |
+| `r_next_o` | Bit del nuevo residuo seleccionado.                     |
+
+### 9.3 Módulo `divider_row`
+
+El módulo `divider_row` agrupa varias celdas `divider_cell` conectadas en cascada. Su función es realizar una resta completa entre el residuo parcial y el divisor. El acarreo se propaga desde la celda menos significativa hasta la más significativa, permitiendo determinar si la resta puede aceptarse o no.
+
+Este módulo genera como salida el resultado de la resta y el acarreo final. Dicho acarreo se utiliza posteriormente como señal de decisión para saber si el divisor cabe dentro del residuo parcial.
+
+### 9.4 Módulo `divider_stage`
+
+El módulo `divider_stage` representa una etapa completa del algoritmo de división. En esta etapa se intenta restar el divisor al residuo parcial. Si la resta no produce un resultado negativo, el nuevo residuo corresponde al resultado de dicha resta y el bit de cociente generado es 1. En caso contrario, se conserva el residuo anterior y el bit de cociente generado es 0.
+
+Por lo tanto, cada `divider_stage` cumple dos funciones principales:
+
+* Actualizar el residuo parcial.
+* Generar un bit del cociente.
+
+### 9.5 Módulo `divider_comb`
+
+El módulo `divider_comb` implementa el divisor combinacional completo. Para ello, conecta varias etapas `divider_stage` en secuencia, procesando los bits del dividendo desde el más significativo hasta el menos significativo.
+
+En cada etapa se incorpora un nuevo bit del dividendo al residuo parcial, se intenta realizar la resta con el divisor y se produce un nuevo bit del cociente. Al finalizar todas las etapas, el módulo entrega el cociente completo, el residuo final y la señal `div_zero_o`.
+
+Sus principales señales son:
+
+| Señal         | Función                                 |
+| ------------- | --------------------------------------- |
+| `dividend_i`  | Dividendo de entrada de 6 bits.         |
+| `divisor_i`   | Divisor de entrada de 4 bits.           |
+| `quotient_o`  | Cociente resultante de 6 bits.          |
+| `remainder_o` | Residuo resultante de 4 bits.           |
+| `div_zero_o`  | Bandera que indica división entre cero. |
+
+### 9.6 Módulo `divider_core`
+
+El módulo `divider_core` encapsula el divisor combinacional dentro de una interfaz sincrónica. Este bloque registra las entradas, ejecuta la división mediante el módulo `divider_comb` y registra las salidas antes de entregarlas al resto del sistema.
+
+La operación inicia cuando la señal `valid_i` se activa. En ese momento, el módulo captura el dividendo y el divisor. Posteriormente, el resultado calculado se almacena en registros de salida y se activa la señal `done_o`, indicando que el cociente y el residuo se encuentran estables.
+
+Este diseño permite que el subsistema de división se comunique de forma ordenada con los demás bloques del sistema mediante una interfaz tipo `valid/done`.
+
+### 9.7 Diagrama del subsistema de división
+
+```mermaid
+flowchart TD
+    A[dividend_i de 6 bits] --> CORE[divider_core]
+    B[divisor_i de 4 bits] --> CORE
+    V[valid_i] --> CORE
+    CLK[clk] --> CORE
+    RST[rst_n] --> CORE
+
+    CORE --> COMB[divider_comb]
+    COMB --> STAGES[Cadena de divider_stage]
+    STAGES --> ROWS[divider_row]
+    ROWS --> CELLS[divider_cell]
+
+    CORE --> Q[quotient_o de 6 bits]
+    CORE --> R[remainder_o de 4 bits]
+    CORE --> Z[div_zero_o]
+    CORE --> D[done_o]
+```
+
+**Figura X.** Diagrama de bloques del subsistema de división entera.
 
 
 ## 3. Desarrollo
