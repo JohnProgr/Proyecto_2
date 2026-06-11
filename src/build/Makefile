@@ -6,27 +6,23 @@ FAMILY = GW1N-9C
 DEVICE = GW1NR-LV9QN88PC6/I5
 
 #Nombre del proyecto... Acá ponen el nombre que deseen.
-PROYECT = sumador
+PROYECT = system_top
 
 #Fuentes de diseno
-SOURCES := ../design/sync_2ff.sv ../design/keypad_reader.sv ../design/display_hex_decoder.sv ../design/display_mux4.sv ../design/bcd4_adder.sv ../design/fsm_top.sv
-#Si quieren indicarlas una a una, pueden hacerlo como en este ejemplo:
-#SOURCES = ../design/module_top_deco_gray.v ../design/module_input_deco_gray.v 
+SOURCES := $(wildcard ../design/*.v ../design/*.sv)
 
 #Fuente de simulacion
-#aca va el testbench que quieran simular
-TESTBENCH = ../sim/tb_fsm_top.sv
+TESTBENCH = ../sim/tb_system_top_direct.sv
 
 # Constraints para el proyecto
-#aca va el archivo de constraints del proyecto
-CONSTRAINTS = ../constr/Modulo_Pines.cst
+CONSTRAINTS = ../constr/proyecto3.cst
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
-TOP_DESIGN = fsm_top
-TOP_TB = tb_fsm_top
+TOP_DESIGN = system_top
+TOP_TB     = tb_system_top_direct
 
 #nombre del vcd que va a generar el tb
-VCD_FILE = tb_fsm_top.vcd
+VCD_FILE = tb_system_top_direct.vcd
 
 
 all: synth pnr bitstream load
@@ -62,8 +58,8 @@ wv: ${VCD_FILE}
 load: ${PROYECT}_${BOARD}.fs
 	openFPGALoader -b ${BOARD} ${PROYECT}_${BOARD}.fs 
 
-.PHONY: load  wv
-.INTERMEDIATE: ${PROYECT}_pnr.json ${PROYECT}.json
-
 clean:
-	rm -f *.out *.vcd *.o *.json *.asc *.bit sim.out
+	rm -f *.o *.vcd *.json *.fs *.log
+
+.PHONY: load wv test clean
+.INTERMEDIATE: ${PROYECT}_pnr.json ${PROYECT}.json

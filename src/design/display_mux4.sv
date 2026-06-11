@@ -24,34 +24,34 @@ module display_mux4 (
 
     always_comb begin
         digit = 4'd0;
-        anodo = 4'b1111;
+        anodo = 4'b0000; // todos los displays apagados
 
-       case (sel)
-    2'b00: begin
-        digit = d3;
-        anodo = 4'b1110;
-    end
+        case (sel)
+            2'b00: begin
+                digit = d3;
+                anodo = 4'b0001;
+            end
 
-    2'b01: begin
-        digit = d2;
-        anodo = 4'b1101;
-    end
+            2'b01: begin
+                digit = d2;
+                anodo = 4'b0010;
+            end
 
-    2'b10: begin
-        digit = d1;
-        anodo = 4'b1011;
-    end
+            2'b10: begin
+                digit = d1;
+                anodo = 4'b0100;
+            end
 
-    2'b11: begin
-        digit = d0;
-        anodo = 4'b0111;
-    end
+            2'b11: begin
+                digit = d0;
+                anodo = 4'b1000;
+            end
 
-    default: begin
-        digit = 4'd0;
-        anodo = 4'b1111;
-    end
-endcase
+            default: begin
+                digit = 4'd0;
+                anodo = 4'b0000;
+            end
+        endcase
     end
 
     display_hex_decoder decoder_inst (

@@ -1,124 +1,207 @@
-# Proyecto II: Diseño digital sincrónico en HDL
+# División de enteros
 
 ## 1. Abreviaturas y definiciones
 
-- **FPGA**: *Field Programmable Gate Array*. Dispositivo lógico programable utilizado para implementar sistemas digitales.
-- **HDL**: *Hardware Description Language*. Lenguaje utilizado para describir hardware digital.
-- **SystemVerilog**: lenguaje de descripción de hardware utilizado para implementar el diseño del proyecto.
-- **FSM**: *Finite State Machine*. Máquina de estados finitos utilizada para controlar la secuencia de operación del sistema.
-- **BCD**: *Binary Coded Decimal*. Formato en el cual cada dígito decimal se almacena de forma independiente en 4 bits.
-- **Debounce**: técnica utilizada para reducir o eliminar lecturas falsas generadas por el rebote mecánico de una tecla.
-- **Multiplexado**: técnica que permite controlar varios displays utilizando señales compartidas y activando un display a la vez.
-- **Tang Nano 9K**: tarjeta FPGA utilizada como plataforma de implementación.
+* **FPGA (Field Programmable Gate Array):** Dispositivo lógico programable que permite implementar circuitos digitales mediante la configuración de bloques lógicos internos y recursos de interconexión.
+
+* **SystemVerilog:** Lenguaje de descripción y verificación de hardware utilizado para modelar, simular e implementar los módulos desarrollados para el proyecto.
+
+* **FSM (Finite State Machine):** Máquina de estados finitos utilizada para controlar la secuencia de operaciones y el flujo de datos dentro de un sistema digital.
+
+* **Dividendo:** Número que será dividido durante la operación de división entera.
+
+* **Divisor:** Número por el cual se divide el dividendo para obtener el cociente y el residuo.
+
+* **Cociente:** Resultado entero obtenido al realizar una división.
+
+* **Residuo:** Cantidad restante después de efectuar una división entera, cumpliendo que su valor es menor que el divisor.
+
+* **Ruta crítica:** Camino combinacional más largo dentro de un circuito digital, el cual determina la frecuencia máxima de funcionamiento del sistema.
+
+* **Multiplexor (MUX):** Circuito combinacional que selecciona una de varias entradas y la conecta a una única salida según una señal de control.
+
+* **Flip-Flop (FF):** Elemento secuencial capaz de almacenar un bit de información sincronizado con una señal de reloj.
+
+* **Tang Nano 9K:** Tarjeta de desarrollo FPGA utilizada para la implementación física y validación experimental del diseño.
+
+* **Testbench:** Entorno de simulación utilizado para verificar el correcto funcionamiento de un módulo digital mediante la aplicación de estímulos y la observación de sus respuestas.
+
 
 ## 2. Referencias
+[1] Pong P. Chu. FPGA Prototyping by SystemVerilog Examples. Xilinx MicroBlaze MCS SoC Edition. Wiley, 2018.
 
-[1] Pong P. Chu. *FPGA Prototyping by SystemVerilog Examples*. Xilinx MicroBlaze MCS SoC Edition. Wiley, 2018.
+[2] Andrew House. Hex Keypad Explanation. Noviembre de 2009. Disponible en: https://www-ug.eecg.toronto.edu/msl/nios_devices/datasheets/hex_expl.pdf
 
-[2] Andrew House. *Hex Keypad Explanation*. Noviembre de 2009. Disponible en: https://www-ug.eecg.toronto.edu/msl/nios_devices/datasheets/hex_expl.pdf
+[3] David Medina. Video tutorial para principiantes. Flujo abierto para TangNano 9K. Julio de 2024. Disponible en: https://www.youtube.com/watch?v=AKO-SaOM7BA
 
-[3] David Medina. *Video tutorial para principiantes. Flujo abierto para TangNano 9K*. Julio de 2024. Disponible en: https://www.youtube.com/watch?v=AKO-SaOM7BA
+[4] David Medina. Wiki tutorial sobre el uso de la TangNano 9K y el flujo abierto de herramientas. Mayo de 2024. Disponible en: https://github.com/DJosueMM/open_source_fpga_environment/wiki
 
-[4] David Medina. *Wiki tutorial sobre el uso de la TangNano 9K y el flujo abierto de herramientas*. Mayo de 2024. Disponible en: https://github.com/DJosueMM/open_source_fpga_environment/wiki
+[5] William James Dally y R. Curtis Harting. Digital Design: A Systems Approach. Cambridge University Press, 2012.
 
-[5] William James Dally y R. Curtis Harting. *Digital Design: A Systems Approach*. Cambridge University Press, 2012.
+## 3. Introducción 
+El diseño de sistemas digitales modernos requiere la implementación eficiente de algoritmos mediante circuitos lógicos secuenciales y combinacionales. A diferencia del software, donde las operaciones se ejecutan de forma secuencial por un procesador, en los sistemas digitales es necesario diseñar explícitamente la ruta de datos y la lógica de control que permitan realizar cada operación de manera correcta y sincronizada con una señal de reloj.
 
-## 3. Introducción
+En este proyecto se desarrolla una unidad de división entera sin signo capaz de calcular el cociente y el residuo a partir de un dividendo de hasta 6 bits y un divisor de hasta 4 bits. La implementación se realiza utilizando SystemVerilog sobre una FPGA Tang Nano 9K, siguiendo los principios fundamentales del diseño digital sincrónico. El sistema integra diferentes subsistemas encargados de la lectura de datos desde un teclado hexadecimal, la conversión entre formatos numéricos, la ejecución del algoritmo de división y el despliegue de resultados en displays de siete segmentos.
 
-El presente proyecto consiste en el diseño e implementación de un sistema digital sincrónico en una FPGA Tang Nano 9K utilizando SystemVerilog. El sistema permite capturar datos desde un teclado hexadecimal, almacenar dos números decimales positivos, realizar la suma aritmética de ambos y mostrar el resultado en cuatro displays de 7 segmentos.
+La unidad de división se basa en el algoritmo iterativo de división presentado en el curso, el cual realiza una secuencia de restas parciales para determinar los bits del cociente y actualizar el residuo en cada etapa. Para garantizar un funcionamiento ordenado y facilitar la comunicación entre bloques, el diseño emplea señales de control tipo valid y done, además de registros que sincronizan el flujo de datos entre los diferentes subsistemas.
 
-El diseño se desarrolló de forma modular. Cada bloque cumple una función específica dentro del sistema: lectura del teclado, sincronización de señales externas, control mediante una máquina de estados finitos, almacenamiento de operandos, suma BCD y despliegue multiplexado. Esta organización facilita la verificación individual de los módulos y permite describir con claridad el flujo de datos desde la entrada física hasta la salida visual del sistema.
+El desarrollo del proyecto permite aplicar conceptos fundamentales de diseño lógico, tales como máquinas de estados finitos (FSM), rutas de datos, diseño modular, verificación mediante simulación y análisis de temporización. Asimismo, proporciona experiencia práctica en la implementación de algoritmos aritméticos sobre hardware reconfigurable, considerando tanto aspectos funcionales como restricciones de rendimiento y utilización de recursos dentro de la FPGA.
 
 ## 4. Definición del problema y objetivos
 
-El problema planteado consiste en diseñar un circuito digital sincrónico capaz de capturar dos números enteros positivos desde un teclado hexadecimal, procesarlos dentro de la FPGA y desplegar la suma sin signo en cuatro displays de 7 segmentos. El sistema debe operar con el reloj de 27 MHz de la Tang Nano 9K y debe considerar la sincronización de las señales externas del teclado, debido a que estas no están originalmente alineadas con el reloj interno del sistema.
+### 4.1 Definición del problema
 
-### 4.1 Objetivo general
+La implementación de operaciones aritméticas en hardware representa un desafío importante dentro del diseño de sistemas digitales, ya que requiere transformar algoritmos matemáticos en estructuras lógicas capaces de operar de forma sincronizada y eficiente. Entre estas operaciones, la división entera es particularmente relevante debido a que involucra múltiples etapas de cálculo y control, a diferencia de operaciones más simples como la suma o la resta.
 
-Implementar un sistema digital sincrónico en SystemVerilog que capture dos números desde un teclado hexadecimal, realice su suma en formato decimal y muestre el resultado en displays de 7 segmentos.
+El problema planteado en este proyecto consiste en diseñar e implementar una unidad de división entera sin signo capaz de recibir un dividendo decimal representable con un máximo de 6 bits y un divisor decimal representable con un máximo de 4 bits. El sistema debe calcular el cociente y el residuo de la operación utilizando el algoritmo de división estudiado en el curso, garantizando además una correcta interacción entre los diferentes subsistemas encargados de la captura de datos, el procesamiento y el despliegue de resultados.
 
-### 4.2 Objetivos específicos
+La solución debe cumplir con los principios de diseño digital sincrónico, empleando registros, señales de control y una interfaz de comunicación basada en las señales *valid* y *done* para coordinar el flujo de datos entre módulos. Asimismo, el sistema debe ser implementado y verificado en una FPGA Tang Nano 9K utilizando SystemVerilog.
 
-- Leer un teclado hexadecimal mediante el barrido de filas y la lectura de columnas.
-- Sincronizar las señales externas del teclado con el reloj interno de la FPGA.
-- Reducir el efecto del rebote mecánico mediante una lógica de bloqueo y espera de liberación de tecla.
-- Controlar la captura de los operandos mediante una máquina de estados finitos.
-- Almacenar los dígitos ingresados en registros internos.
-- Implementar una suma BCD de cuatro dígitos.
-- Multiplexar cuatro displays de 7 segmentos para mostrar el número ingresado o el resultado de la suma.
-- Validar el funcionamiento del sistema mediante testbenches en SystemVerilog.
+### 4.2 Objetivo general
 
-## 5. Descripción general del sistema
+Diseñar e implementar una unidad de división entera sin signo en una FPGA Tang Nano 9K, capaz de calcular el cociente y el residuo de una operación de división mediante el uso de SystemVerilog y técnicas de diseño digital sincrónico.
 
-El sistema completo recibe como entrada las columnas de un teclado hexadecimal y genera como salida las señales de filas para el barrido del teclado, las señales de segmentos del display y las señales de selección de ánodo. El flujo de operación inicia en el módulo de lectura del teclado, el cual detecta una tecla presionada y entrega un código de 4 bits junto con una señal de validación. Posteriormente, la FSM interpreta ese código y decide si el dígito debe almacenarse como parte del primer número, como parte del segundo número o si debe mostrarse el resultado.
+### 4.3 Objetivos específicos
 
-La tecla `*`, codificada internamente como `4'hE`, se utiliza como separador entre operandos. La tecla `#`, codificada como `4'hF`, se utiliza para solicitar la visualización del resultado. Las teclas numéricas de `0` a `9` se almacenan como dígitos BCD.
+* Implementar el algoritmo iterativo de división entera estudiado en el curso para obtener el cociente y el residuo de una operación aritmética.
+
+* Diseñar una ruta de datos que permita realizar las operaciones de resta, desplazamiento y almacenamiento requeridas por el algoritmo de división.
+
+* Implementar la lógica de control necesaria para coordinar el funcionamiento de los diferentes subsistemas mediante señales de control y sincronización.
+
+* Integrar los módulos de lectura de datos, conversión numérica, división y despliegue dentro de un sistema digital completo.
+
+* Verificar el correcto funcionamiento de cada módulo y del sistema integrado mediante testbenches y simulaciones funcionales.
+
+* Analizar el consumo de recursos y el desempeño temporal del diseño implementado en la FPGA.
+
+* Desplegar el cociente y el residuo obtenidos en displays de siete segmentos mediante los módulos de conversión y visualización desarrollados.
+
+### 5.0 Descripción general del sistema
+
+El sistema desarrollado implementa una unidad de división entera sin signo sobre una FPGA Tang Nano 9K. Su función principal consiste en recibir un dividendo y un divisor desde un teclado hexadecimal, ejecutar la operación de división y desplegar en displays de siete segmentos el cociente o el residuo obtenido.
+
+El flujo de operación inicia en el módulo de lectura del teclado, el cual realiza el barrido de las filas, sincroniza las señales provenientes de las columnas y genera un código hexadecimal de 4 bits junto con una señal de validación. Posteriormente, el módulo de control de entrada interpreta las teclas ingresadas por el usuario y construye los valores correspondientes al dividendo y al divisor en formato binario.
+
+Durante la captura de datos, las teclas numéricas de 0 a 9 son utilizadas para ingresar los dígitos decimales. La tecla `#`, codificada internamente como `4'hF`, se utiliza para confirmar la entrada actual y avanzar al siguiente paso del proceso. La tecla `*`, codificada como `4'hE`, permite borrar la información almacenada y reiniciar la captura de datos.
+
+Una vez ingresados el dividendo y el divisor, el módulo de control genera una señal `valid` que inicia la operación de división dentro del subsistema `divider_core`. Este bloque encapsula un divisor combinacional basado en etapas sucesivas de resta y selección de residuo, entregando como resultado el cociente, el residuo y una señal `done` que indica que el resultado es válido y estable.
+
+Después de completarse la división, el sistema permite visualizar el cociente o el residuo mediante una señal de selección. La tecla `D`, codificada como `4'hD`, conmuta entre ambas visualizaciones una vez que el resultado se encuentra disponible.
+
+Finalmente, el resultado seleccionado se convierte a formato BCD y se envía al subsistema de despliegue, el cual utiliza multiplexado para controlar cuatro displays de siete segmentos. Mientras la división no haya finalizado, el sistema muestra el valor que el usuario se encuentra ingresando; cuando la operación concluye, se despliega automáticamente el resultado calculado.
 
 El diseño se compone de los siguientes módulos principales:
 
-| Módulo | Función principal |
-|---|---|
-| `keypad_reader.sv` | Realiza el barrido del teclado, sincroniza las columnas y genera `key_value` y `key_valid`. |
-| `fsm_top.sv` | Integra la lectura del teclado, la FSM de control, los registros de operandos, el sumador BCD y el despliegue. |
-| `bcd4_adder.sv` | Realiza la suma decimal de cuatro dígitos BCD. |
-| `display_mux4.sv` | Multiplexa los cuatro dígitos hacia los displays de 7 segmentos. |
-| `display_hex_decoder.sv` | Convierte cada dígito de 4 bits en el patrón correspondiente para el display de 7 segmentos. |
-| `system_top.sv` | Versión alternativa del módulo superior, con parte de la lógica de suma integrada directamente. |
+| Módulo                         | Función principal                                                                                                      |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `keypad_reader.sv`             | Realiza el barrido del teclado hexadecimal, sincroniza las entradas y genera las señales `key_value` y `key_valid`.    |
+| `input_controller.sv`          | Controla la captura del dividendo y divisor, valida los límites permitidos y genera la señal de inicio de la división. |
+| `divider_cell.sv`              | Implementa la celda elemental de resta y selección utilizada por el divisor.                                           |
+| `divider_row.sv`               | Construye una fila completa de resta mediante varias celdas `divider_cell` conectadas en cascada.                      |
+| `divider_stage.sv`             | Ejecuta una etapa del algoritmo de división y genera un bit del cociente junto con el nuevo residuo parcial.           |
+| `divider_comb.sv`              | Implementa el divisor combinacional completo utilizando varias etapas de división conectadas secuencialmente.          |
+| `divider_core.sv`              | Encapsula el divisor combinacional dentro de una interfaz sincrónica basada en las señales `valid` y `done`.           |
+| `result_selector.sv`           | Selecciona entre mostrar el cociente o el residuo calculado.                                                           |
+| `bin_to_bcd.sv`                | Convierte los resultados binarios a formato BCD para su despliegue decimal.                                            |
+| `display_hex_decoder.sv`       | Convierte cada dígito BCD en el patrón correspondiente para un display de siete segmentos.                             |
+| `display_mux4.sv`              | Realiza el multiplexado de los cuatro displays.                                                                        |
+| `display_result_controller.sv` | Coordina la selección, conversión y despliegue de los datos mostrados al usuario.                                      |
+| `system_top.sv`                | Módulo superior que integra todos los subsistemas y coordina el flujo completo de operación.                           |
 
-En el informe se toma `fsm_top.sv` como módulo superior principal, ya que organiza el comportamiento del sistema mediante estados definidos y se ajusta directamente al criterio de control secuencial solicitado para el proyecto.
+La Figura 1 muestra el diagrama general de interconexión del sistema desarrollado.
+
+```mermaid
+flowchart TD
+    A[Teclado hexadecimal]
+    B[keypad_reader]
+    C[input_controller]
+    D[divider_core]
+    E[result_selector]
+    F[bin_to_bcd]
+    G[display_result_controller]
+    H[Displays de 7 segmentos]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+```
+
+**Figura 1.** Diagrama general de bloques del sistema de división entera implementado.
 
 ## 6. Criterio de diseño
 
-El diseño se realizó de manera modular para separar la ruta de datos de la lógica de control. Esta decisión permite probar cada subsistema de forma independiente y simplifica la depuración del proyecto. En lugar de concentrar todo el comportamiento en un único bloque, el sistema se dividió en lectura de teclado, control de estados, suma y visualización.
+El diseño se realizó de manera modular con el objetivo de separar claramente la ruta de datos de la lógica de control. Esta estrategia facilita la verificación individual de cada subsistema, simplifica la depuración del proyecto y permite reutilizar módulos previamente desarrollados. En lugar de concentrar toda la funcionalidad en un único bloque, el sistema se dividió en subsistemas de lectura, captura de datos, división, selección de resultados y despliegue.
 
-La captura de datos se implementó mediante una FSM porque el sistema debe interpretar cada tecla según el contexto de operación. Una tecla numérica puede pertenecer al primer operando, al segundo operando o puede iniciar una nueva operación después de mostrar el resultado. Con la FSM se define este comportamiento de forma ordenada y sin ambigüedad.
+La captura de datos se implementó mediante un módulo de control encargado de interpretar las teclas ingresadas por el usuario y determinar si corresponden al dividendo, al divisor o a una instrucción de control. Este enfoque permite administrar de forma ordenada el flujo de operación del sistema, garantizando que los datos sean almacenados y procesados únicamente cuando se encuentran completos y son válidos.
 
-Las señales del teclado son externas a la FPGA y, por lo tanto, asíncronas respecto al reloj interno. Para reducir el riesgo de metaestabilidad, las columnas se registran mediante dos flip-flops antes de ser utilizadas por la lógica principal. Además, se implementó una lógica de bloqueo para evitar que una misma pulsación sea registrada varias veces mientras la tecla permanece presionada.
+Las señales provenientes del teclado hexadecimal son externas a la FPGA y, por lo tanto, asíncronas respecto al reloj interno de 27 MHz. Para reducir el riesgo de metaestabilidad, las entradas se sincronizan mediante registros antes de ser utilizadas por la lógica principal. Además, se implementó un mecanismo de bloqueo y liberación de tecla para evitar múltiples capturas producidas por una misma pulsación.
 
-La suma se realiza en formato BCD porque los datos ingresados y mostrados son decimales. Cada dígito se almacena de forma independiente en 4 bits, lo cual simplifica la conexión entre el bloque aritmético y el subsistema de despliegue. Esta decisión evita tener que convertir un número binario completo a decimal antes de mostrarlo en los displays.
+La operación de división se implementó utilizando una arquitectura jerárquica compuesta por celdas elementales de resta (`divider_cell`), agrupadas en filas (`divider_row`) y posteriormente en etapas de división (`divider_stage`). Esta organización permite construir el divisor completo a partir de bloques simples y fácilmente verificables. Cada etapa determina un bit del cociente y actualiza el residuo parcial mediante operaciones de resta y selección controlada.
 
-El despliegue se implementó mediante multiplexado porque los cuatro displays comparten las mismas señales de segmentos. El sistema activa un ánodo a la vez y cambia rápidamente entre los cuatro dígitos, generando la percepción visual de que todos los displays se encuentran encendidos de forma simultánea.
+Con el fin de cumplir los requisitos de sincronización entre subsistemas, el divisor combinacional fue encapsulado dentro de una interfaz registrada (`divider_core`). De esta forma, la operación se inicia mediante una señal `valid` y el resultado se entrega acompañado por una señal `done`, lo que permite desacoplar la lógica de cálculo de la lógica de control y garantizar que los datos de salida sean estables antes de ser utilizados por otros módulos.
+
+Los resultados internos de la división se representan en formato binario, ya que este formato simplifica las operaciones aritméticas y reduce la complejidad del hardware. Sin embargo, debido a que la información debe mostrarse al usuario en formato decimal, se implementó un bloque de conversión de binario a BCD antes del subsistema de despliegue.
+
+El despliegue de información se implementó mediante multiplexado de cuatro displays de siete segmentos. Esta técnica permite utilizar un conjunto compartido de líneas de segmentos mientras se activa un único display a la vez mediante las señales de ánodo. Gracias a la alta frecuencia de refresco generada por la FPGA, el usuario percibe todos los dígitos encendidos simultáneamente.
+
+Finalmente, se incorporó un módulo de selección de resultados que permite alternar entre la visualización del cociente y el residuo una vez concluida la operación de división. Esta decisión evita la necesidad de utilizar displays adicionales y permite presentar toda la información requerida utilizando el mismo subsistema de visualización.
+
 
 ## 7. Subsistema de lectura del teclado hexadecimal
 
-El módulo `keypad_reader` se encarga de leer un teclado hexadecimal de matriz 4x4. Para esto, genera un barrido sobre las filas mediante la señal `filas[3:0]` y lee el estado de las columnas mediante `columnas[3:0]`.
+El módulo `keypad_reader` se encarga de leer un teclado hexadecimal de matriz 4×4. Para ello, genera un barrido periódico sobre las filas mediante la señal `filas[3:0]` y monitorea continuamente el estado de las columnas a través de la señal `columnas[3:0]`.
 
-El teclado se trabaja con lógica activa en bajo. En reposo, las columnas se mantienen en `4'hF`. Cuando se presiona una tecla, una de las columnas cambia a cero durante la fila que se encuentra activa. Con la combinación de fila activa y columna detectada se obtiene el código de la tecla presionada.
+El teclado opera con lógica activa en bajo. En condiciones normales, todas las columnas permanecen en estado alto (`4'hF`). Cuando una tecla es presionada, la fila activa se conecta con una de las columnas, provocando que ésta cambie a nivel bajo. A partir de la combinación entre la fila activa y la columna detectada, el módulo determina el código hexadecimal correspondiente a la tecla presionada.
+
+La salida principal del módulo está formada por una señal `key_value`, que contiene el código hexadecimal detectado, y una señal `key_valid`, que indica mediante un pulso de un ciclo de reloj que una nueva tecla válida ha sido capturada.
 
 ### 7.1 Funcionamiento interno
 
 El módulo está compuesto por los siguientes elementos internos:
 
-- `scan_cnt`: contador que define el tiempo durante el cual se mantiene activa cada fila.
-- `fila_index`: índice que selecciona cuál fila se activa durante el barrido.
-- `columnas_ff1` y `columnas_sync`: registros utilizados para sincronizar las entradas externas del teclado.
-- `key_code`: código hexadecimal obtenido a partir de la combinación fila-columna.
-- `key_valid`: pulso de un ciclo de reloj que indica la detección de una tecla válida.
-- `locked`: bandera que bloquea nuevas detecciones mientras una tecla permanece presionada.
-- `release_cnt`: contador que espera un tiempo de liberación antes de aceptar una nueva tecla.
+* **scan_cnt:** contador encargado de definir el tiempo durante el cual permanece activa cada fila del teclado.
+* **fila_index:** registro que selecciona la fila actualmente activa durante el proceso de barrido.
+* **columnas_ff1** y **columnas_sync:** registros utilizados para sincronizar las señales provenientes del teclado con el reloj interno de la FPGA.
+* **key_code:** código hexadecimal obtenido a partir de la combinación fila-columna detectada.
+* **key_valid:** pulso de validación generado cuando se detecta una nueva tecla.
+* **locked:** bandera que impide múltiples capturas mientras una misma tecla permanece presionada.
+* **release_cnt:** contador utilizado para verificar la liberación de la tecla antes de permitir una nueva detección.
+
+La sincronización de las entradas externas mediante registros reduce el riesgo de metaestabilidad, mientras que el mecanismo de bloqueo evita que una única pulsación genere múltiples eventos de lectura.
 
 ### 7.2 Mapeo de teclas
 
-| Fila activa | Columna detectada | Tecla |
-|---|---|---|
-| `1110` | `1110` | `* / E` |
-| `1110` | `1101` | `0` |
-| `1110` | `1011` | `# / F` |
-| `1110` | `0111` | `D` |
-| `1101` | `1110` | `7` |
-| `1101` | `1101` | `8` |
-| `1101` | `1011` | `9` |
-| `1101` | `0111` | `C` |
-| `1011` | `1110` | `4` |
-| `1011` | `1101` | `5` |
-| `1011` | `1011` | `6` |
-| `1011` | `0111` | `B` |
-| `0111` | `1110` | `1` |
-| `0111` | `1101` | `2` |
-| `0111` | `1011` | `3` |
-| `0111` | `0111` | `A` |
+La Tabla 1 muestra la correspondencia entre la fila activa, la columna detectada y el código hexadecimal generado por el módulo.
 
-Para la operación principal del sistema se utilizan los dígitos `0` a `9`, la tecla `*` como separador entre operandos y la tecla `#` como instrucción para mostrar el resultado.
+| Fila activa | Columna detectada | Tecla |
+| ----------- | ----------------- | ----- |
+| 1110        | 1110              | * / E |
+| 1110        | 1101              | 0     |
+| 1110        | 1011              | # / F |
+| 1110        | 0111              | D     |
+| 1101        | 1110              | 7     |
+| 1101        | 1101              | 8     |
+| 1101        | 1011              | 9     |
+| 1101        | 0111              | C     |
+| 1011        | 1110              | 4     |
+| 1011        | 1101              | 5     |
+| 1011        | 1011              | 6     |
+| 1011        | 0111              | B     |
+| 0111        | 1110              | 1     |
+| 0111        | 1101              | 2     |
+| 0111        | 1011              | 3     |
+| 0111        | 0111              | A     |
+
+Para el funcionamiento del sistema de división se utilizan principalmente los dígitos decimales de `0` a `9`. Adicionalmente, algunas teclas son empleadas como comandos de control:
+
+* **# (4'hF):** confirma la entrada actual y permite avanzar al siguiente paso del proceso de captura.
+* *** (4'hE):** reinicia o borra los datos almacenados.
+* **D (4'hD):** permite alternar entre la visualización del cociente y el residuo una vez finalizada la división.
 
 ### 7.3 Diagrama del subsistema de lectura
 
@@ -128,356 +211,477 @@ flowchart LR
     CLK[clk 27 MHz] --> SCAN[Contador de barrido]
     SCAN --> FILA[fila_index]
     FILA --> FILAS[filas 3:0]
+
     SYNC --> DEC[Decodificador fila-columna]
     FILA --> DEC
+
     DEC --> LOCK[Lógica de bloqueo y liberación]
     LOCK --> KV[key_value 3:0]
     LOCK --> VALID[key_valid]
 ```
 
-**Figura 1.** Diagrama de bloques del subsistema de lectura del teclado hexadecimal.
+**Figura 2.** Diagrama de bloques del subsistema de lectura del teclado hexadecimal.
 
-## 8. FSM de control principal
+El subsistema de lectura constituye la interfaz principal entre el usuario y la FPGA. Su función es transformar las pulsaciones realizadas sobre el teclado en códigos digitales sincronizados y libres de rebotes, permitiendo que los módulos posteriores procesen la información de manera confiable.
 
-La máquina de estados principal se encuentra en el módulo `fsm_top.sv`. Su función es decidir qué acción debe realizarse cada vez que `keypad_reader` genera una tecla válida.
 
-La FSM tiene tres estados:
+## 8. Subsistema de control de entrada
 
-| Estado | Función |
-|---|---|
-| `S_INPUT_A` | Captura el primer número. |
-| `S_INPUT_B` | Captura el segundo número. |
-| `S_RESULT` | Muestra el resultado de la suma. |
+El módulo `input_controller` se encarga de administrar el proceso de captura de datos y coordinar el inicio de la operación de división. Su función principal consiste en interpretar las teclas generadas por el módulo `keypad_reader`, construir los valores correspondientes al dividendo y al divisor, y generar la señal de validación que inicia el cálculo dentro del subsistema de división.
 
-### 8.1 Estado `S_INPUT_A`
+A diferencia del proyecto anterior, donde la lógica de control se utilizaba para almacenar dos operandos destinados a una suma, en este proyecto el controlador debe gestionar el ingreso secuencial de un dividendo y un divisor, verificando además que ambos valores se encuentren dentro de los límites establecidos por la especificación del diseño.
 
-En este estado, las teclas numéricas se almacenan en los registros del primer operando `a3`, `a2`, `a1` y `a0`. Cada vez que se ingresa un nuevo dígito, los valores anteriores se desplazan hacia la izquierda:
+### 8.1 Captura del dividendo
 
-```systemverilog
-a3 <= a2;
-a2 <= a1;
-a1 <= a0;
-a0 <= key_value;
-```
+Durante la primera etapa de operación, las teclas numéricas ingresadas por el usuario son utilizadas para construir el dividendo. Cada nuevo dígito se incorpora al valor previamente almacenado mediante operaciones de desplazamiento decimal, permitiendo ingresar números de varios dígitos de manera similar a una calculadora.
 
-Este mecanismo permite ingresar números de forma similar a una calculadora. Por ejemplo, al presionar `1`, `2`, `3`, el valor queda almacenado como `0123`. Cuando se presiona `*`, la FSM pasa al estado `S_INPUT_B` y limpia los registros del segundo operando.
+Mientras el dividendo se encuentra en proceso de captura, el sistema permanece a la espera de una señal de confirmación por parte del usuario. Cuando se presiona la tecla `#`, el controlador considera finalizada la entrada del dividendo y habilita la captura del divisor.
 
-### 8.2 Estado `S_INPUT_B`
+### 8.2 Captura del divisor
 
-En este estado, las teclas numéricas se almacenan en los registros `b3`, `b2`, `b1` y `b0`, usando el mismo esquema de desplazamiento. Si se presiona nuevamente `*`, se limpia el segundo operando. Si se presiona `#`, la FSM pasa al estado `S_RESULT`.
+Una vez confirmado el dividendo, el controlador comienza a almacenar los dígitos correspondientes al divisor. El procedimiento de captura es similar al utilizado para el dividendo, permitiendo construir progresivamente el valor decimal a partir de las teclas ingresadas.
 
-### 8.3 Estado `S_RESULT`
+Cuando el usuario presiona nuevamente la tecla `#`, el controlador interpreta que ambos operandos han sido ingresados correctamente y procede a iniciar la operación de división.
 
-En este estado, el sistema muestra en los displays la suma calculada por el módulo `bcd4_adder`. Si el usuario presiona una tecla numérica, el sistema inicia una nueva operación y regresa a `S_INPUT_A`, usando esa tecla como primer dígito del nuevo operando. Si se presiona `*`, el sistema pasa nuevamente a la captura del segundo operando.
+### 8.3 Inicio de la división
 
-### 8.4 Diagrama de estados
+Después de capturar los dos operandos, el módulo genera un pulso sobre la señal `valid`, indicando al subsistema `divider_core` que los datos de entrada son válidos y pueden ser procesados.
+
+El dividendo y el divisor permanecen almacenados en registros internos mientras el bloque de división ejecuta el algoritmo correspondiente. De esta manera se garantiza que los datos permanezcan estables durante toda la operación.
+
+### 8.4 Espera del resultado
+
+Una vez iniciada la división, el controlador monitorea la señal `done` proveniente del módulo `divider_core`. Esta señal indica que el cociente y el residuo ya han sido calculados y registrados correctamente.
+
+Mientras `done` permanece inactivo, el sistema continúa esperando la finalización de la operación. Cuando `done` se activa, el resultado queda disponible para ser enviado al subsistema de visualización.
+
+### 8.5 Reinicio de la captura
+
+El sistema permite reiniciar la captura de datos mediante la tecla `*`. Cuando esta tecla es detectada, los registros internos se limpian y el controlador retorna al estado inicial, permitiendo ingresar una nueva operación de división.
+
+### 8.6 Diagrama de estados
+
+La Figura 3 muestra el diagrama de estados utilizado por el subsistema de control de entrada.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> S_INPUT_A
+    [*] --> INPUT_DIVIDEND
 
-    S_INPUT_A --> S_INPUT_A: tecla 0-9 / desplazar A e ingresar dígito
-    S_INPUT_A --> S_INPUT_B: tecla * / limpiar B
-    S_INPUT_A --> S_INPUT_A: otra tecla / mantener estado
+    INPUT_DIVIDEND --> INPUT_DIVIDEND : tecla 0-9
+    INPUT_DIVIDEND --> INPUT_DIVISOR : tecla #
 
-    S_INPUT_B --> S_INPUT_B: tecla 0-9 / desplazar B e ingresar dígito
-    S_INPUT_B --> S_INPUT_B: tecla * / limpiar B
-    S_INPUT_B --> S_RESULT: tecla # / mostrar resultado
-    S_INPUT_B --> S_INPUT_B: otra tecla / mantener estado
+    INPUT_DIVISOR --> INPUT_DIVISOR : tecla 0-9
+    INPUT_DIVISOR --> START_DIVISION : tecla #
 
-    S_RESULT --> S_INPUT_A: tecla 0-9 / iniciar nueva operación
-    S_RESULT --> S_INPUT_B: tecla * / ingresar nuevo B
-    S_RESULT --> S_RESULT: otra tecla / mantener resultado
+    START_DIVISION --> WAIT_DONE : valid
+
+    WAIT_DONE --> WAIT_DONE : done = 0
+    WAIT_DONE --> RESULT_READY : done = 1
+
+    RESULT_READY --> INPUT_DIVIDEND : tecla *
 ```
 
-**Figura 2.** Diagrama de estados de la FSM principal.
+**Figura 3.** Diagrama de estados del subsistema de control de entrada.
 
-### 8.5 Diagrama del subsistema de control y registros
-```mermaid
-flowchart LR
-    KV[key_value 3:0] --> FSM[FSM de control]
-    VALID[key_valid] --> FSM
-    FSM --> CTRL[Señales de control]
-
-    CTRL --> REGA[Registros operando A]
-    CTRL --> REGB[Registros operando B]
-
-    KV --> REGA
-    KV --> REGB
-
-    REGA --> AOUT[a3 a2 a1 a0]
-    REGB --> BOUT[b3 b2 b1 b0]
-
-    FSM --> SEL[Selección de dato mostrado]
-    AOUT --> SEL
-    BOUT --> SEL
-    R[r3 r2 r1 r0] --> SEL
-
-    SEL --> DOUT[d3 d2 d1 d0]
-```
-
-**Figura 3.** Diagrama de bloques del subsistema de control y registros.
-
-## 9. Subsistema de suma aritmética
-
-La suma se implementa en el módulo `bcd4_adder.sv`. Este bloque recibe dos operandos de cuatro dígitos BCD:
-
-- Primer operando: `a3`, `a2`, `a1`, `a0`.
-- Segundo operando: `b3`, `b2`, `b1`, `b0`.
-
-La salida corresponde al resultado de la suma:
-
-- Resultado: `r3`, `r2`, `r1`, `r0`.
-- Bandera: `overflow`.
-
-El módulo suma primero las unidades, luego las decenas, centenas y millares. Cada dígito se corrige mediante la función `add_bcd_digit`, la cual convierte valores de 0 a 18 en un dígito decimal de 0 a 9 y un acarreo. De esta manera, cuando la suma de dos dígitos supera 9, se genera un `carry` hacia el siguiente dígito.
-
-Por ejemplo:
-
-| Operación | Dígito resultante | Carry |
-|---|---:|---:|
-| `4 + 6 = 10` | `0` | `1` |
-| `9 + 9 = 18` | `8` | `1` |
-
-Este criterio se eligió porque el sistema trabaja directamente con dígitos decimales individuales. Por esta razón, el resultado queda listo para ser enviado al bloque de despliegue sin requerir una conversión binario-decimal adicional.
-
-### 9.1 Diagrama del subsistema de suma
+### 8.7 Diagrama del subsistema de control
 
 ```mermaid
 flowchart LR
-    A[a3 a2 a1 a0] --> ADD[Sumador BCD de 4 dígitos]
-    B[b3 b2 b1 b0] --> ADD
-    ADD --> R[r3 r2 r1 r0]
-    ADD --> OV[overflow]
+    KV[key_value]
+    VALID[key_valid]
+
+    KV --> CTRL[input_controller]
+    VALID --> CTRL
+
+    CTRL --> DIVIDEND[Registro dividendo]
+    CTRL --> DIVISOR[Registro divisor]
+
+    CTRL --> V[valid]
+
+    V --> DIVIDER[divider_core]
+
+    DIVIDER --> D[done]
+
+    D --> CTRL
+
+    DIVIDER --> Q[Cociente]
+    DIVIDER --> R[Residuo]
 ```
 
-**Figura 4.** Diagrama de bloques del subsistema de suma BCD.
+**Figura 4.** Diagrama de bloques del subsistema de control y captura de datos.
+
+## 9. Subsistema de división entera
+
+El subsistema de división entera es el bloque encargado de calcular el cociente y el residuo a partir del dividendo y divisor ingresados por el usuario. En este proyecto se trabaja con división entera sin signo, por lo que todos los operandos se interpretan como valores positivos.
+
+El dividendo se representa mediante 6 bits, lo que permite valores desde 0 hasta 63. El divisor se representa mediante 4 bits, permitiendo valores desde 0 hasta 15. Como resultado, el sistema entrega un cociente de 6 bits y un residuo de 4 bits. Además, se incluye una señal de detección de división entre cero para identificar operaciones inválidas.
+
+La división se implementa mediante una estructura jerárquica formada por los módulos `divider_cell`, `divider_row`, `divider_stage`, `divider_comb` y `divider_core`. Esta organización permite construir el divisor completo a partir de bloques pequeños, facilitando la verificación individual de cada etapa.
+
+### 9.1 Principio de funcionamiento
+
+El algoritmo utilizado se basa en el método de división binaria por restas sucesivas parciales. En cada etapa, se forma un residuo parcial y se intenta restar el divisor. Si la resta es válida, el resultado de la resta se acepta como nuevo residuo y se genera un bit de cociente igual a 1. Si la resta no es válida, se conserva el residuo anterior y el bit de cociente generado es 0.
+
+La operación cumple la relación fundamental de la división entera:
+
+```text
+dividendo = divisor × cociente + residuo
+```
+
+donde el residuo debe ser menor que el divisor cuando la operación es válida.
+
+### 9.2 Módulo `divider_cell`
+
+El módulo `divider_cell` representa la celda elemental del divisor. Esta celda trabaja sobre un solo bit y se encarga de realizar parte de la resta por complemento a dos entre el residuo parcial y el divisor. Además, incluye una selección que permite escoger entre conservar el bit original del residuo o aceptar el bit calculado por la resta.
+
+Sus señales principales son:
+
+| Señal      | Función                                                 |
+| ---------- | ------------------------------------------------------- |
+| `r_i`      | Bit del residuo parcial de entrada.                     |
+| `b_i`      | Bit del divisor.                                        |
+| `cin_i`    | Acarreo de entrada utilizado en la resta.               |
+| `accept_i` | Señal que indica si se acepta el resultado de la resta. |
+| `diff_o`   | Bit resultante de la operación de resta.                |
+| `cout_o`   | Acarreo de salida hacia la siguiente celda.             |
+| `r_next_o` | Bit del nuevo residuo seleccionado.                     |
+
+### 9.3 Módulo `divider_row`
+
+El módulo `divider_row` agrupa varias celdas `divider_cell` conectadas en cascada. Su función es realizar una resta completa entre el residuo parcial y el divisor. El acarreo se propaga desde la celda menos significativa hasta la más significativa, permitiendo determinar si la resta puede aceptarse o no.
+
+Este módulo genera como salida el resultado de la resta y el acarreo final. Dicho acarreo se utiliza posteriormente como señal de decisión para saber si el divisor cabe dentro del residuo parcial.
+
+### 9.4 Módulo `divider_stage`
+
+El módulo `divider_stage` representa una etapa completa del algoritmo de división. En esta etapa se intenta restar el divisor al residuo parcial. Si la resta no produce un resultado negativo, el nuevo residuo corresponde al resultado de dicha resta y el bit de cociente generado es 1. En caso contrario, se conserva el residuo anterior y el bit de cociente generado es 0.
+
+Por lo tanto, cada `divider_stage` cumple dos funciones principales:
+
+* Actualizar el residuo parcial.
+* Generar un bit del cociente.
+
+### 9.5 Módulo `divider_comb`
+
+El módulo `divider_comb` implementa el divisor combinacional completo. Para ello, conecta varias etapas `divider_stage` en secuencia, procesando los bits del dividendo desde el más significativo hasta el menos significativo.
+
+En cada etapa se incorpora un nuevo bit del dividendo al residuo parcial, se intenta realizar la resta con el divisor y se produce un nuevo bit del cociente. Al finalizar todas las etapas, el módulo entrega el cociente completo, el residuo final y la señal `div_zero_o`.
+
+Sus principales señales son:
+
+| Señal         | Función                                 |
+| ------------- | --------------------------------------- |
+| `dividend_i`  | Dividendo de entrada de 6 bits.         |
+| `divisor_i`   | Divisor de entrada de 4 bits.           |
+| `quotient_o`  | Cociente resultante de 6 bits.          |
+| `remainder_o` | Residuo resultante de 4 bits.           |
+| `div_zero_o`  | Bandera que indica división entre cero. |
+
+### 9.6 Módulo `divider_core`
+
+El módulo `divider_core` encapsula el divisor combinacional dentro de una interfaz sincrónica. Este bloque registra las entradas, ejecuta la división mediante el módulo `divider_comb` y registra las salidas antes de entregarlas al resto del sistema.
+
+La operación inicia cuando la señal `valid_i` se activa. En ese momento, el módulo captura el dividendo y el divisor. Posteriormente, el resultado calculado se almacena en registros de salida y se activa la señal `done_o`, indicando que el cociente y el residuo se encuentran estables.
+
+Este diseño permite que el subsistema de división se comunique de forma ordenada con los demás bloques del sistema mediante una interfaz tipo `valid/done`.
+
+### 9.7 Diagrama del subsistema de división
+
+```mermaid
+flowchart TD
+    A[dividend_i de 6 bits] --> CORE[divider_core]
+    B[divisor_i de 4 bits] --> CORE
+    V[valid_i] --> CORE
+    CLK[clk] --> CORE
+    RST[rst_n] --> CORE
+
+    CORE --> COMB[divider_comb]
+    COMB --> STAGES[Cadena de divider_stage]
+    STAGES --> ROWS[divider_row]
+    ROWS --> CELLS[divider_cell]
+
+    CORE --> Q[quotient_o de 6 bits]
+    CORE --> R[remainder_o de 4 bits]
+    CORE --> Z[div_zero_o]
+    CORE --> D[done_o]
+```
+
+**Figura 5.** Diagrama de bloques del subsistema de división entera.
 
 ## 10. Subsistema de despliegue en 7 segmentos
 
-El despliegue está formado por los módulos `display_mux4` y `display_hex_decoder`.
+El subsistema de despliegue es el encargado de presentar al usuario la información generada por el sistema de división. Este bloque recibe el cociente y el residuo calculados por el subsistema de división y permite visualizar cualquiera de los dos resultados en cuatro displays de siete segmentos.
 
-El módulo `display_mux4` recibe cuatro dígitos de 4 bits (`d3`, `d2`, `d1`, `d0`) y selecciona cuál de ellos se envía al decodificador de 7 segmentos. Para esto utiliza un contador `refresh_count`, del cual se toman los bits más significativos para seleccionar el dígito activo.
+El despliegue está formado principalmente por los módulos `result_selector`, `bin_to_bcd`, `display_result_controller`, `display_mux4` y `display_hex_decoder`.
 
-El módulo `display_hex_decoder` recibe un valor hexadecimal de 4 bits y entrega el patrón de segmentos correspondiente en la señal `seg[6:0]`. Aunque el decodificador permite representar valores de `0` a `F`, durante la operación principal del sistema se utilizan principalmente valores decimales de `0` a `9`.
+El módulo `result_selector` permite seleccionar cuál dato será mostrado en pantalla. Dependiendo de la señal de selección, el sistema puede desplegar el cociente o el residuo obtenido durante la operación de división. Esta funcionalidad permite reutilizar el mismo conjunto de displays para visualizar ambos resultados.
 
-La selección de ánodos se realiza con lógica activa en bajo:
+Una vez seleccionado el valor correspondiente, el módulo `bin_to_bcd` convierte el número binario a representación BCD. Esta conversión es necesaria debido a que los resultados internos de la división se almacenan en formato binario, mientras que los displays requieren dígitos decimales independientes para su correcta visualización.
+
+Posteriormente, el módulo `display_result_controller` organiza los dígitos BCD obtenidos y los envía al sistema de multiplexado. El módulo `display_mux4` recibe cuatro dígitos de 4 bits (`d3`, `d2`, `d1` y `d0`) y selecciona cuál de ellos será mostrado en cada instante. Para ello utiliza un contador interno de refresco que determina cuál display debe activarse.
+
+Finalmente, el módulo `display_hex_decoder` convierte cada dígito de 4 bits en el patrón correspondiente para los siete segmentos. Aunque este decodificador puede representar valores hexadecimales desde 0 hasta F, durante la operación normal del sistema se utilizan principalmente valores decimales de 0 a 9.
+
+### 10.1 Multiplexado de los displays
+
+La multiplexación permite controlar cuatro displays utilizando un único conjunto de líneas de segmentos. El sistema activa únicamente un display a la vez mediante las señales de ánodo y cambia rápidamente entre ellos, generando la percepción visual de que todos permanecen encendidos simultáneamente.
+
+La selección de ánodos se realiza mediante lógica activa en bajo, según se muestra en la Tabla 2.
 
 | Selector | Dígito mostrado | Ánodo activo |
-|---|---|---|
-| `00` | `d3` | `1110` |
-| `01` | `d2` | `1101` |
-| `10` | `d1` | `1011` |
-| `11` | `d0` | `0111` |
+| -------- | --------------- | ------------ |
+| 00       | d3              | 1110         |
+| 01       | d2              | 1101         |
+| 10       | d1              | 1011         |
+| 11       | d0              | 0111         |
 
-### 10.1 Diagrama del subsistema de despliegue
+### 10.2 Conversión binario a BCD
+
+Los resultados producidos por el divisor se encuentran originalmente en formato binario. Para permitir una representación decimal comprensible para el usuario, el módulo `bin_to_bcd` realiza la conversión hacia cuatro dígitos BCD.
+
+Esta conversión evita que el usuario deba interpretar directamente el resultado binario y permite utilizar el mismo sistema de despliegue decimal empleado en proyectos anteriores.
+
+### 10.3 Selección entre cociente y residuo
+
+Una vez finalizada la operación de división, el sistema permite alternar entre la visualización del cociente y el residuo. Esta funcionalidad es implementada por el módulo `result_selector`, el cual recibe ambos resultados y entrega únicamente el valor seleccionado hacia el bloque de conversión y despliegue.
+
+Gracias a este mecanismo, es posible presentar toda la información requerida utilizando únicamente cuatro displays de siete segmentos.
+
+### 10.4 Diagrama del subsistema de despliegue
 
 ```mermaid
 flowchart LR
-    D[d3 d2 d1 d0] --> MUX[Multiplexor de 4 dígitos]
-    CLK[clk 27 MHz] --> REF[Contador de refresco]
-    REF --> MUX
-    MUX --> DIG[Dígito seleccionado]
-    DIG --> DEC[Decodificador hexadecimal a 7 segmentos]
-    DEC --> SEG[seven 6:0]
+    Q[Cociente]
+    R[Residuo]
+
+    Q --> SEL[result_selector]
+    R --> SEL
+
+    SEL --> BCD[bin_to_bcd]
+
+    BCD --> CTRL[display_result_controller]
+
+    CTRL --> MUX[display_mux4]
+    MUX --> DEC[display_hex_decoder]
+
+    DEC --> SEG[seg 6:0]
     MUX --> AN[anodo 3:0]
 ```
 
-**Figura 5.** Diagrama de bloques del subsistema de despliegue multiplexado.
+**Figura 6.** Diagrama de bloques del subsistema de despliegue multiplexado.
+
+El subsistema de despliegue constituye la interfaz visual del proyecto, permitiendo al usuario observar de forma clara y directa los resultados generados por la unidad de división sin necesidad de interpretar valores binarios internos.
 
 ## 11. Interconexión general del sistema
 
-El sistema completo se organiza como una ruta de datos controlada por la FSM. El teclado entrega el dato de entrada, el lector de teclado lo convierte en un código hexadecimal válido, la FSM decide en cuál registro debe almacenarse, el sumador calcula el resultado y el bloque de display selecciona qué valor debe mostrarse.
+El sistema completo se organiza como una ruta de datos controlada por el módulo `input_controller`. El flujo de operación inicia cuando el usuario ingresa información mediante el teclado hexadecimal. El módulo `keypad_reader` detecta las pulsaciones, realiza el barrido de filas y genera un código hexadecimal válido junto con una señal de validación.
+
+Posteriormente, el módulo `input_controller` interpreta las teclas ingresadas y construye los valores correspondientes al dividendo y al divisor. Una vez que ambos operandos han sido capturados, este bloque genera la señal `valid`, que inicia el proceso de división dentro del módulo `divider_core`.
+
+El subsistema de división recibe el dividendo y el divisor, ejecuta el algoritmo de división entera y produce como resultado el cociente, el residuo y la señal `done`, la cual indica que la operación ha finalizado correctamente. Los resultados generados son enviados al módulo `result_selector`, encargado de seleccionar cuál de los dos valores será mostrado al usuario.
+
+El dato seleccionado se convierte posteriormente desde formato binario a BCD mediante el módulo `bin_to_bcd`. Finalmente, el subsistema de despliegue recibe los dígitos BCD, realiza el multiplexado de los displays y genera las señales necesarias para controlar los segmentos y ánodos de los cuatro displays de siete segmentos.
+
+La Figura 7 muestra la interconexión general de todos los subsistemas que conforman el diseño.
 
 ```mermaid
 flowchart LR
-    K[Teclado hexadecimal] --> KR[keypad_reader]
-    KR -->|key_value, key_valid| FSM[fsm_top / FSM de control]
-    FSM --> RA[Registros operando A]
-    FSM --> RB[Registros operando B]
-    RA --> ADD[bcd4_adder]
-    RB --> ADD
-    ADD --> SEL[Selección de dato a mostrar]
-    FSM --> SEL
-    SEL --> DMUX[display_mux4]
-    DMUX --> DEC[display_hex_decoder]
-    DEC --> DISP[Displays de 7 segmentos]
+    K[Teclado hexadecimal]
+
+    K --> KR[keypad_reader]
+
+    KR -->|key_value, key_valid| IC[input_controller]
+
+    IC -->|dividend, divisor, valid| DIV[divider_core]
+
+    DIV -->|quotient, remainder, done| SEL[result_selector]
+
+    SEL --> BCD[bin_to_bcd]
+
+    BCD --> DISP[display_result_controller]
+
+    DISP --> MUX[display_mux4]
+
+    MUX --> DEC[display_hex_decoder]
+
+    DEC --> SEG[Displays de 7 segmentos]
 ```
 
-**Figura 6.** Diagrama general de interconexión del sistema.
+**Figura 7.** Diagrama general de interconexión del sistema de división entera.
+
+La estructura modular utilizada permite verificar cada subsistema de manera independiente antes de integrarlos dentro del sistema completo. Además, la separación entre captura de datos, procesamiento y visualización facilita el mantenimiento del diseño y reduce la complejidad de depuración durante las etapas de simulación e implementación física.
 
 ## 12. Testbench y simulaciones
+La verificación funcional del proyecto se realizó mediante testbenches individuales para los principales módulos del sistema. Los archivos de simulación se encuentran en la carpeta src/sim.
 
-La verificación funcional del proyecto se realizó mediante testbenches individuales para los principales módulos del sistema. Los archivos de simulación se encuentran en la carpeta `src/sim`.
+### 12.1 Testbench del lector de teclado
 
-### 12.1 Testbench del sumador BCD
+El archivo tb_keypad_reader.sv se utiliza para verificar el funcionamiento del módulo keypad_reader. Con el fin de acelerar la simulación, los parámetros SCAN_DELAY y RELEASE_DELAY fueron reducidos respecto a sus valores de implementación física, permitiendo observar varias secuencias de barrido y detección de teclas en un intervalo de tiempo corto.
 
-El archivo `tb_bcd4_adder.sv` verifica el módulo `bcd4_adder`. En este testbench se aplican diferentes combinaciones de operandos y se compara la salida obtenida con el resultado esperado.
+Durante la simulación se emulan diferentes pulsaciones sobre el teclado hexadecimal mediante la modificación controlada de las señales de columnas. El objetivo es verificar que el módulo detecte correctamente cada tecla, genere el código hexadecimal correspondiente y produzca un pulso de validación únicamente cuando ocurre una nueva pulsación.
 
-| Operando A | Operando B | Resultado esperado |
-|---:|---:|---:|
-| `1234` | `0456` | `1690` |
-| `0999` | `0999` | `1998` |
-| `0000` | `0000` | `0000` |
-| `1111` | `2222` | `3333` |
-| `5000` | `4000` | `9000` |
+La Figura 7 muestra el comportamiento temporal de las señales más relevantes del subsistema de lectura. Se observa el barrido periódico de las filas mediante la señal filas, la sincronización de las entradas externas a través de columnas_sync, la detección de teclas mediante key_code y la generación de los pulsos key_valid. Asimismo, puede observarse la activación de la señal locked, la cual evita múltiples detecciones mientras una misma tecla permanece presionada.
 
-La simulación confirma el comportamiento esperado del sumador y permite comprobar el manejo de acarreos entre dígitos decimales.
+Durante la simulación se verificó la correcta detección de distintas teclas, observándose que los valores generados en key_value coinciden con los códigos esperados. Además, la FSM interna de lectura mantiene el funcionamiento adecuado del mecanismo de barrido y liberación de tecla, garantizando una captura confiable de las entradas provenientes del teclado hexadecimal.
 
-![Simulación del sumador BCD](doc/img/tb_bcd4_adder.jpeg)
+Simulación del lector de teclado
 
-**Figura 7.** Simulación funcional del módulo `bcd4_adder`.
+<img width="1305" height="295" alt="image" src="https://github.com/user-attachments/assets/dbf4479b-5bda-4a83-b77a-edc57815647f" />
 
-### 12.2 Testbench del multiplexor de display
 
-El archivo `tb_display_mux4.sv` prueba el módulo `display_mux4`. Inicialmente se cargan los dígitos `1`, `2`, `3`, `4`, y luego se cambian por `9`, `8`, `7`, `6`. La simulación permite verificar que la señal `anodo` cambia periódicamente y que la salida `seven` corresponde al dígito seleccionado en cada instante.
+Figura 8. Simulación funcional del módulo keypad_reader. Se observa el barrido de filas, la sincronización de las señales provenientes del teclado, la detección de pulsaciones y la generación de los códigos key_value junto con el pulso de validación key_valid.
 
-![Simulación del multiplexor de display](doc/img/tb_display_mux4.jpeg)
+### 12.2 Testbench del divisor sincrónico
 
-**Figura 8.** Simulación funcional del módulo `display_mux4`.
+El archivo `tb_divider_core.sv` se utilizó para verificar el funcionamiento del módulo `divider_core`, encargado de coordinar la operación de división mediante una interfaz de control basada en las señales `valid_i` y `done_o`.
 
-### 12.3 Testbench del lector de teclado
+Durante la simulación se aplicaron diferentes combinaciones de dividendos y divisores con el objetivo de validar el cálculo del cociente y el residuo. La Tabla 3 resume algunos de los casos evaluados.
 
-El archivo `tb_keypad_reader.sv` valida el módulo `keypad_reader`. Para acelerar la simulación se modifican los parámetros `SCAN_DELAY` y `RELEASE_DELAY`. El testbench presiona virtualmente las teclas del teclado hexadecimal y comprueba que el módulo genera correctamente el código `key_value` junto con el pulso `key_valid`.
+| Dividendo | Divisor | Cociente esperado | Residuo esperado |
+| --------- | ------- | ----------------- | ---------------- |
+| 10        | 2       | 5                 | 0                |
+| 15        | 4       | 3                 | 3                |
+| 63        | 15      | 4                 | 3                |
+| 7         | 3       | 2                 | 1                |
+| 5         | 8       | 0                 | 5                |
 
-![Simulación del lector de teclado](doc/img/tb_keypad_reader.jpeg)
+La Figura 8 muestra la simulación funcional del módulo. Se observa que cada vez que la señal `valid_i` se activa, el divisor captura los operandos de entrada y genera el resultado correspondiente. Una vez finalizado el cálculo, la señal `done_o` indica que el cociente y el residuo son válidos y pueden ser utilizados por los módulos posteriores del sistema.
 
-**Figura 9.** Simulación funcional del módulo `keypad_reader`.
+Los resultados obtenidos coinciden con los valores esperados para todos los casos de prueba considerados, verificando el correcto funcionamiento de la unidad de división.
 
-### 12.4 Testbench del sistema con FSM
+**Simulación del divisor sincrónico**
 
-El archivo `tb_fsm_top.sv` verifica el sistema integrado. En este testbench se simulan secuencias completas de entrada de datos, utilizando `*` para pasar al segundo operando y `#` para mostrar el resultado.
+<img width="1183" height="144" alt="image" src="https://github.com/user-attachments/assets/aed34474-6c18-41f0-af5b-6d894434cc53" />
 
-| Secuencia simulada | Interpretación | Resultado esperado |
-|---|---|---:|
-| `1 2 3 4 * 4 5 6 #` | `1234 + 456` | `1690` |
-| `9 9 9 * 9 9 9 #` | `999 + 999` | `1998` |
 
-La verificación se realiza observando los registros internos `d3`, `d2`, `d1` y `d0`, los cuales representan los cuatro dígitos enviados al subsistema de despliegue. También se observan señales como `state`, `key_value`, `key_valid`, `filas`, `columnas`, `seven` y `anodo` para revisar la secuencia completa desde la entrada hasta la salida visual.
+**Figura 9.** Simulación funcional del módulo `divider_core`. Se muestran las señales de control `valid_i` y `done_o`, así como los valores de dividendo, divisor, cociente y residuo generados por la unidad de división.
 
-![Simulación del sistema completo con FSM](doc/img/tb_fsm_top.jpeg)
+### 12.3 Testbench del sistema integrado
 
-**Figura 10.** Simulación funcional del sistema completo mediante `tb_fsm_top`.
+El archivo `tb_system_top_direct.sv` se utilizó para verificar el funcionamiento del sistema integrado. Este testbench permite evaluar conjuntamente los bloques de división, selección de resultados y despliegue, validando la interacción entre los diferentes subsistemas que conforman el diseño.
+
+Durante la simulación se aplicaron diferentes combinaciones de dividendos y divisores mediante las señales de entrada `dividend_i` y `divisor_i`. Cada operación se inició mediante la activación de la señal `valid_i`, mientras que la finalización del proceso fue indicada por la señal `done_o`. Posteriormente, se verificó que los valores generados para el cociente y el residuo coincidieran con los resultados esperados.
+
+La Tabla 4 resume algunos de los casos evaluados durante la simulación.
+
+| Dividendo | Divisor | Cociente esperado | Residuo esperado  |
+| --------- | ------- | ----------------- | ----------------- |
+| 15        | 4       | 3                 | 3                 |
+| 63        | 15      | 4                 | 3                 |
+| 12        | 0       | División inválida | División inválida |
+
+La Figura 9 muestra la simulación funcional del sistema integrado. Se observa la correcta captura de los operandos de entrada, la generación de los valores de cociente y residuo, así como el funcionamiento del subsistema de visualización mediante las señales `anodo` y `seven`. También se verifica el correcto funcionamiento de la señal `select_i`, utilizada para alternar entre la visualización del cociente y del residuo.
+
+Los resultados obtenidos coinciden con los valores teóricos esperados para cada una de las operaciones realizadas. Esto confirma la correcta integración entre el subsistema de división, el bloque de selección de resultados, el conversor binario a BCD y el sistema de despliegue en siete segmentos.
+
+**Simulación del sistema integrado**
+
+<img width="1329" height="235" alt="image" src="https://github.com/user-attachments/assets/c48d06f3-f547-4e33-95bc-9c34bccc421d" />
+
+
+**Figura 10.** Simulación funcional del módulo `system_top_direct`. Se observa la ejecución de distintas operaciones de división, la generación de los valores de cociente y residuo, y el funcionamiento del subsistema de visualización mediante las señales de segmentos y selección de displays.
 
 ## 13. Consumo de recursos
 
-El consumo de recursos debe obtenerse a partir del reporte de síntesis generado por las herramientas del flujo abierto. En esta sección se presenta la cantidad de recursos utilizados por el diseño dentro de la FPGA.
+El consumo de recursos se obtuvo a partir del reporte de utilización generado por la herramienta `nextpnr-gowin` durante la etapa de place-and-route. La Tabla 5 resume los principales recursos utilizados por el diseño dentro de la FPGA Tang Nano 9K.
 
-| Recurso | Cantidad |
-|---|---:|
-| VCC | 1 / 1 (100 %) |
-| SLICE | 560 / 8640 (6 %) |
-| IOB | 21 / 274 (7 %) |
-| ODDR | 0 / 274 (0 %) |
-| MUX2_LUT5 | 95 / 4320 (2 %) |
-| MUX2_LUT6 | 37 / 2160 (1 %) |
-| MUX2_LUT7 | 14 / 1080 (1 %) |
-| MUX2_LUT8 | 7 / 1056 (0 %) |
-| GND | 1 / 1 (100 %) |
-| RAMW | 0 / 270 (0 %) |
-| GSR | 1 / 1 (100 %) |
-| OSC | 0 / 1 (0 %) |
-| rPLL | 0 / 2 (0 %) |
+| Recurso   | Utilizado | Disponible | Utilización |
+| --------- | --------: | ---------: | ----------: |
+| VCC       |         1 |          1 |       100 % |
+| SLICE     |      1359 |       8640 |        15 % |
+| IOB       |        21 |        274 |         7 % |
+| ODDR      |         0 |        274 |         0 % |
+| MUX2_LUT5 |       317 |       4320 |         7 % |
+| MUX2_LUT6 |       151 |       2160 |         6 % |
+| MUX2_LUT7 |        73 |       1080 |         6 % |
+| MUX2_LUT8 |        31 |       1056 |         2 % |
+| GND       |         1 |          1 |       100 % |
+| RAMW      |         0 |        270 |         0 % |
+| GSR       |         1 |          1 |       100 % |
+| OSC       |         0 |          1 |         0 % |
+| rPLL      |         0 |          2 |         0 % |
 
-El reporte de utilización muestra que el diseño utiliza 560 de 8640 slices disponibles, equivalente a un 6 % del dispositivo. Además, se utilizan 21 pines de entrada/salida de 274 disponibles, equivalente a un 7 %. Esto indica que el diseño ocupa una fracción pequeña de los recursos disponibles en la FPGA.
+**Tabla 5.** Utilización de recursos de la FPGA reportada por la herramienta de place-and-route.
 
-## 14. Reporte de temporización y frecuencia máxima
+Los resultados muestran que el recurso más utilizado corresponde a los bloques lógicos tipo **SLICE**, de los cuales se emplean 1359 de los 8640 disponibles, equivalente al 15 % de la capacidad total del dispositivo. Este recurso contiene la lógica combinacional y secuencial utilizada para implementar los módulos de división, captura de datos, conversión binario a BCD y control de despliegue.
 
-El diseño fue planteado para funcionar con el reloj de 27 MHz de la Tang Nano 9K. Para validar este requisito se revisa el reporte de temporización generado durante el proceso de síntesis, colocación y ruteo. El criterio de aceptación es que la frecuencia máxima reportada sea mayor o igual a la frecuencia requerida de 27 MHz.
+Asimismo, se utilizan 21 bloques de entrada/salida (IOB), correspondientes a las conexiones físicas necesarias para la interacción con el exterior. Por otra parte, el diseño no requiere memoria interna (RAMW), osciladores dedicados (OSC) ni bloques PLL (rPLL), por lo que dichos recursos permanecen disponibles para futuras ampliaciones.
 
-| Parámetro | Valor |
-|---|---:|
-| Frecuencia requerida | `27 MHz` |
-| Frecuencia máxima reportada | `162.44 MHz` |
-| Slack | Positivo |
-| Cumplimiento | Cumple |
+En general, la utilización obtenida demuestra que el sistema ocupa una fracción relativamente pequeña de los recursos disponibles en la FPGA Tang Nano 9K, permitiendo la incorporación de funcionalidades adicionales sin comprometer la capacidad del dispositivo.
 
-El reporte de temporización indica una frecuencia máxima de operación de 162.44 MHz para el reloj `display_inst.clk`, con resultado `PASS` para la frecuencia objetivo de 27 MHz. Por lo tanto, el diseño cumple con el requisito mínimo de operación establecido para la Tang Nano 9K.
+
+
+## 14. Reporte de temporización
+
+El reporte de temporización se obtuvo a partir de la etapa de place-and-route realizada con `nextpnr-gowin`. El diseño fue evaluado utilizando como referencia la frecuencia de reloj de 27 MHz correspondiente a la Tang Nano 9K.
+
+El reporte indica que la frecuencia máxima estimada para el reloj principal del sistema es de 50.42 MHz, obteniendo resultado `PASS` para la frecuencia objetivo de 27 MHz. Esto significa que el circuito cumple con los requisitos temporales establecidos para su implementación en la FPGA.
+
+| Parámetro                   |     Valor |
+| --------------------------- | --------: |
+| Frecuencia requerida        | 27.00 MHz |
+| Frecuencia máxima reportada | 50.42 MHz |
+| Resultado                   |      PASS |
+
+La frecuencia máxima reportada es superior a la frecuencia requerida, por lo que el diseño puede operar correctamente con el reloj disponible en la tarjeta. Además, el cumplimiento temporal indica que la ruta crítica del circuito no impide el funcionamiento del sistema a la frecuencia de operación especificada.
 
 ## 15. Análisis de problemas encontrados y soluciones aplicadas
 
-Durante el desarrollo del sistema se identificaron varios puntos importantes relacionados con la lectura del teclado, el control de operación y la representación decimal de los datos.
+Durante el desarrollo del sistema se identificaron diversos desafíos relacionados con la implementación de la división binaria, la interacción entre módulos secuenciales y la representación de los resultados en los displays de siete segmentos. A continuación se describen los principales problemas encontrados y las soluciones adoptadas.
 
-### 15.1 Lectura confiable del teclado
+### 15.1 Sincronización entre la solicitud y finalización de la división
 
-Las señales provenientes del teclado son externas y pueden generar lecturas inestables si se utilizan directamente. Para resolver este problema, las columnas se registraron mediante dos flip-flops antes de ingresar a la lógica principal del lector de teclado. Con esto se reduce el riesgo de metaestabilidad y se adapta la señal externa al dominio de reloj de la FPGA.
+El módulo divisor requiere varios ciclos de reloj para completar una operación. Inicialmente, la captura de resultados se intentó realizar inmediatamente después de aplicar los operandos, lo que producía lecturas incorrectas o resultados incompletos.
 
-### 15.2 Múltiples capturas por una sola pulsación
+Para solucionar este problema se implementó una interfaz de control basada en las señales `valid_i` y `done_o`. La señal `valid_i` indica el inicio de una nueva operación, mientras que `done_o` informa cuándo el cociente y el residuo son válidos. De esta forma se garantiza una correcta sincronización entre el bloque de control y la unidad de división.
 
-Al mantener presionada una tecla, el sistema podía detectar la misma pulsación más de una vez. Para evitarlo se implementó la señal `locked`, la cual bloquea nuevas detecciones después de capturar una tecla válida. El sistema vuelve a aceptar otra tecla únicamente cuando las columnas regresan al estado de reposo y se cumple el tiempo definido por `release_cnt`.
+### 15.2 Manejo de la división entre cero
 
-### 15.3 Definición del flujo de operación
+La operación de división entre cero constituye una condición especial que no puede resolverse mediante el algoritmo normal de división. Si no se considera adecuadamente, el sistema puede generar resultados indefinidos o comportamientos inesperados.
 
-El sistema debía distinguir si una tecla numérica pertenecía al primer operando, al segundo operando o a una nueva operación. Para resolverlo se implementó una FSM con tres estados: captura de A, captura de B y visualización del resultado. Esta estructura permite controlar el flujo de forma clara y reduce ambigüedades en la interpretación de las teclas.
+Para resolver esta situación se incorporó la señal `div_zero_o`, la cual detecta cuando el divisor es igual a cero. Cuando esta condición ocurre, el sistema evita ejecutar la división y genera una indicación específica para el usuario, manteniendo el funcionamiento seguro del circuito.
 
-### 15.4 Representación decimal del resultado
+### 15.3 Conversión de resultados para visualización decimal
 
-Como el resultado debe mostrarse en displays de 7 segmentos en formato decimal, se decidió trabajar con dígitos BCD. Esta representación simplifica el paso desde los registros del sistema hacia el despliegue, ya que cada dígito puede enviarse directamente al decodificador de 7 segmentos.
+El cociente y el residuo producidos por el divisor se encuentran en formato binario. Sin embargo, los displays de siete segmentos requieren valores decimales para una visualización intuitiva por parte del usuario.
 
-### 15.5 Diferencia entre `system_top` y `fsm_top`
+Para solucionar este problema se implementó el módulo `bin_to_bcd`, encargado de convertir los resultados binarios a dígitos BCD. Esta etapa permite representar correctamente los valores obtenidos sin necesidad de realizar conversiones manuales externas.
 
-Durante el desarrollo se trabajaron dos módulos superiores similares. El módulo `system_top` integra parte de la lógica directamente mediante banderas como `entering_B` y `show_result`. En cambio, `fsm_top` organiza el control de forma explícita mediante los estados `S_INPUT_A`, `S_INPUT_B` y `S_RESULT`, además de instanciar el módulo `bcd4_adder`. Por esta razón, `fsm_top` se considera la versión principal para la descripción del diseño final.
+### 15.4 Multiplexado de los displays
 
-## 16. Implementación física
+La FPGA dispone de un número limitado de pines de salida, por lo que no resulta práctico controlar cada display de forma completamente independiente. Además, los cuatro displays comparten las mismas líneas de segmentos.
 
-La implementación física del sistema conecta la FPGA Tang Nano 9K con el teclado hexadecimal y los cuatro displays de 7 segmentos. El teclado funciona como dispositivo de entrada, mientras que los displays se utilizan para mostrar el número que se está ingresando o el resultado de la suma.
+La solución consistió en implementar un esquema de multiplexado mediante el módulo `display_mux4`. Este bloque activa un único display a la vez y alterna rápidamente entre ellos utilizando un contador interno. Debido a la persistencia visual del ojo humano, los cuatro displays aparentan permanecer encendidos simultáneamente.
 
-![Montaje físico del sistema](doc/img/montaje_fisico.jpeg)
+### 15.5 Integración de los módulos del sistema
 
-**Figura 11.** Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
+El diseño completo se desarrolló de forma modular, utilizando bloques independientes para captura de datos, división, conversión BCD y despliegue. Durante la integración fue necesario verificar cuidadosamente la compatibilidad de señales, anchos de buses y tiempos de activación entre módulos.
 
-## 17. Ejercicios 
+La utilización de testbenches individuales permitió validar cada subsistema por separado antes de realizar la integración final. Posteriormente, el testbench del sistema completo confirmó el correcto funcionamiento de la comunicación entre todos los bloques y la generación de los resultados esperados.
 
-### 17.1 Contadores sincrónicos 74LS163
+## 16. Implementación Física
 
-¿Qué hace la salida RCO en un 74LS163?
+La implementación física del sistema conecta la FPGA Tang Nano 9K con el teclado hexadecimal y los 2 displays de 7 segmentos. El teclado funciona como dispositivo de entrada, mientras que los displays se utilizan para mostrar el número que se está ingresando o el resultado de la división.
 
-R/ La salida RCO (Ripple Carry Output) indica que el contador alcanzó su valor máximo (1111) y que las señales de habilitación se encuentran activas. Esta salida se utiliza para encadenar varios contadores y permitir que el siguiente avance cuando el primero complete su ciclo.
+<img width="1080" height="1570" alt="WhatsApp Image 2026-06-07 at 5 10 25 PM" src="https://github.com/user-attachments/assets/93a2bda1-afa3-4bae-b55a-241e04df1bad" />
 
-Explique por qué RCO y T están conectadas entre los dos contadores y explique cómo trabaja esta conexión.
+Figura 11. Montaje físico del sistema con teclado hexadecimal, FPGA y displays de 7 segmentos.
 
-R/ La conexión entre RCO del primer contador y la entrada T (ENT) del segundo permite implementar un conteo en cascada. Cuando el primer contador completa sus 16 estados, la salida RCO genera un pulso que habilita el avance del segundo contador. De esta forma, el segundo contador únicamente incrementa su valor cuando el primero desborda, logrando así un contador de mayor cantidad de bits y una división de frecuencia de la señal original.
+## 17. Conclusiones
 
-¿Cuál es la diferencia entre las entradas T y P del 74LS163?
+1. Se logró diseñar e implementar correctamente un sistema digital capaz de realizar divisiones enteras utilizando la FPGA Tang Nano 9K. El sistema permite ingresar los operandos, ejecutar la operación de división y visualizar tanto el cociente como el residuo mediante displays de siete segmentos.
 
-R/ Las entradas ENP y ENT son señales de habilitación del contador. Ambas deben estar en alto para permitir el conteo normal. Sin embargo, la diferencia principal es que ENT también habilita la generación de la señal RCO, mientras que ENP no afecta directamente dicha salida.
+2. La utilización de una arquitectura modular facilitó el desarrollo y la depuración del proyecto. La separación en bloques independientes para captura de datos, división, conversión binario a BCD y despliegue permitió verificar cada subsistema de manera individual antes de realizar la integración completa.
 
-¿Cuánto toma, luego del flanco positivo de reloj, para que uno de los flip-flops cambie de estado?
+3. Las simulaciones funcionales realizadas mediante testbenches confirmaron el correcto comportamiento de los módulos principales y del sistema integrado. Los resultados obtenidos coincidieron con los valores teóricos esperados para todos los casos de prueba considerados, incluyendo condiciones especiales como la división entre cero.
 
-R/ El cambio de estado ocurre después del tiempo de propagación interno del flip-flop, el cual típicamente se encuentra en el rango aproximado de 10 ns a 20 ns según la hoja de datos del dispositivo.
+4. La implementación del conversor binario a BCD permitió representar adecuadamente los resultados en formato decimal, simplificando la interacción con el usuario y mejorando la interpretación de la información mostrada en los displays.
 
-¿Importa cuál bit de salida se escoja? Explique.
+5. El análisis de utilización de recursos mostró que el diseño emplea únicamente una fracción de la capacidad disponible de la FPGA, utilizando aproximadamente un 15 % de los bloques lógicos del dispositivo. Esto demuestra que la solución propuesta es eficiente y deja margen suficiente para futuras ampliaciones o mejoras del sistema.
 
-R/ Sí importa, ya que cada bit cambia con una frecuencia distinta. Aunque todos los flip-flops son sincronizados por el mismo reloj, las salidas representan divisiones diferentes de frecuencia. Por ejemplo, Qa cambia a la mitad de la frecuencia del reloj, mientras que Qd cambia a una dieciseisava parte de dicha frecuencia. Por ello, dependiendo del bit seleccionado, la señal observada tendrá una velocidad de cambio distinta.
-
-Use la opción de captura de fallas en el osciloscopio para localizar posibles fallas. Explique en qué casos es esperable hallar esta falla.
-
-R/ Las fallas o glitches pueden aparecer debido a diferencias en los tiempos de propagación internos de los flip-flops y la lógica combinacional. Estas transiciones breves suelen observarse cuando varias salidas cambian simultáneamente y la señal RCO conmuta entre alto y bajo. Debido a que los cambios no ocurren exactamente al mismo instante, pueden generarse pulsos espurios de corta duración.
-
-### 17.2 Cerrojo Set-Reset con compuertas NAND
-
-En este ejercicio se debe construir un cerrojo Set-Reset utilizando compuertas NAND 74HC00. El circuito se prueba con señales de entrada `S` y `R`, y se verifica el comportamiento de las salidas `Q` y `QN` en función del estado del reloj.
-
-![Montaje del cerrojo SR](doc/img/Latch_SR_NAND.png)
-
-**Figura 12.** diagrama del cerrojo SR construido con compuertas NAND.
+6. El reporte de temporización indicó una frecuencia máxima de operación superior a la frecuencia requerida por la tarjeta, cumpliendo satisfactoriamente las restricciones temporales del proyecto. Esto confirma que el sistema puede operar de forma confiable en la plataforma seleccionada.
 
 
-![Captura del analizador lógico para cerrojo SR](doc/img/Tabla_verdad_Latch.png)
 
-**Figura 13.** Tabla de verdad del SR_Latch.
 
-Funcionamiento del circuito
-
-El latch S-R sincronizado con reloj funciona mediante dos etapas principales. En la primera etapa, dos compuertas NAND reciben las señales de entrada Set (S), Reset (R) y Clock (CLK). Estas compuertas determinan cuándo las señales de control pueden afectar el estado interno del latch.
-
-En la segunda etapa, otras dos compuertas NAND realimentadas generan las salidas Q y Q̅. Gracias a esta realimentación cruzada, el circuito puede almacenar un estado binario incluso después de que las entradas cambien.
-
-Cuando CLK se encuentra en bajo, el circuito conserva su estado previo. En cambio, cuando CLK está en alto, las entradas S y R pueden modificar el valor almacenado. Si S se activa, la salida Q pasa a alto; si R se activa, Q pasa a bajo.
-
-La principal utilidad de este cerrojo consiste en el almacenamiento temporal de un bit de información y su complemento, siendo uno de los bloques fundamentales para sistemas secuenciales y memorias digitales.
-## 18. Conclusiones
-
-El proyecto permitió implementar un sistema digital sincrónico completo en una FPGA, integrando lectura de señales externas, control secuencial, almacenamiento de datos, suma aritmética y visualización en displays de 7 segmentos. La división modular facilitó la verificación del sistema, ya que cada bloque pudo analizarse por separado antes de integrarse en el módulo superior.
-
-La FSM principal permitió controlar de forma clara el flujo de operación del sistema, diferenciando entre la captura del primer número, la captura del segundo número y la visualización del resultado. Además, el uso de registros y sincronización permitió adaptar las señales externas del teclado al dominio de reloj interno de la FPGA.
+*

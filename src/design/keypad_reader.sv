@@ -18,6 +18,7 @@ module keypad_reader (
     logic [3:0] columnas_sync;
 
     logic [3:0] col_read;
+    logic [1:0] fila_read;
     logic [3:0] key_code;
     logic       detected;
     logic       locked;
@@ -58,17 +59,20 @@ module keypad_reader (
     end
 
     always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n)
-            col_read <= 4'hF;
-        else
-            col_read <= columnas_sync;
+        if (!rst_n) begin
+            col_read  <= 4'hF;
+            fila_read <= 2'd0;
+        end else begin
+            col_read  <= columnas_sync;
+            fila_read <= fila_index;
+        end
     end
 
     always_comb begin
         key_code = 4'h0;
         detected = 1'b0;
 
-        case (fila_index)
+        case (fila_read)
             2'd0: begin
                 case (col_read)
                     4'hE: begin key_code = 4'hE; detected = 1'b1; end // *
