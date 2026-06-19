@@ -1,7 +1,7 @@
 # Proyecto #3: División de enteros
-Adonay Palencia Molina 
-Fabián Chaverri Vargas
-John Hibbert Bonilla 
+Adonay Palencia Molina,  
+Fabián Chaverri Vargas, 
+John Hibbert Bonilla. 
 ## 1. Abreviaturas y definiciones
 
 * **FPGA (Field Programmable Gate Array):** Dispositivo lógico programable que permite implementar circuitos digitales mediante la configuración de bloques lógicos internos y recursos de interconexión.
