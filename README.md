@@ -1,6 +1,8 @@
 # Proyecto #3: División de enteros
 Adonay Palencia Molina,  
+
 Fabián Chaverri Vargas, 
+
 John Hibbert Bonilla. 
 ## 1. Abreviaturas y definiciones
 
